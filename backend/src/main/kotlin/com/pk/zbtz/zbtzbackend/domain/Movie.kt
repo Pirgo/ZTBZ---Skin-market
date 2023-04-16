@@ -1,10 +1,10 @@
 package com.pk.zbtz.zbtzbackend.domain
 
 data class Movie(
-    val id: Int,
+    val id: Long,
     val title: String,
-    val directorId: Int,
-    val genreId: Int,
+    val directorId: Long,
+    val genreId: Long,
     val productionYear: Int?,
     val rating: Float?
 )
