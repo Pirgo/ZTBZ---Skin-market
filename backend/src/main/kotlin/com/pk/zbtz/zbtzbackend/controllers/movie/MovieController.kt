@@ -1,6 +1,6 @@
 package com.pk.zbtz.zbtzbackend.controllers.movie
 
-import com.pk.zbtz.zbtzbackend.controllers.Response
+import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
 import com.pk.zbtz.zbtzbackend.domain.Movie
 import com.pk.zbtz.zbtzbackend.domain.Statistics
 import org.springframework.web.bind.annotation.*
@@ -19,12 +19,10 @@ class MovieController {
         @RequestParam(value = "max_year", required = false) maxYear: Int?,
         @RequestParam(value = "min_rating", required = false) minRating: Float?,
         @RequestParam(value = "max_rating", required = false) maxRating: Float?
-    ): Response<List<Movie>> {
+    ): ResponseWithStatistics<List<Movie>> {
         // TODO: Implement
 
-        println(sort)
-
-        return Response(
+        return ResponseWithStatistics(
             data = emptyList(),
             statistics = Statistics()
         )
@@ -33,10 +31,10 @@ class MovieController {
     @GetMapping("/{movie_id}")
     fun getMovie(
         @PathVariable("movie_id") movieId: Long,
-    ): Response<Movie> {
+    ): ResponseWithStatistics<Movie> {
         // TODO: Implement
 
-        return Response(
+        return ResponseWithStatistics(
             data = null,
             statistics = Statistics()
         )
@@ -45,10 +43,10 @@ class MovieController {
     @PostMapping
     fun addMovie(
         @RequestBody request: AddMovieRequest
-    ): Response<Movie> {
+    ): ResponseWithStatistics<Movie> {
         // TODO: Implement
 
-        return Response(
+        return ResponseWithStatistics(
             data = null,
             statistics = Statistics()
         )
@@ -57,10 +55,10 @@ class MovieController {
     @DeleteMapping("/{movie_id}")
     fun deleteMovie(
         @PathVariable("movie_id") movieId: Long,
-    ): Response<Any> {
+    ): ResponseWithStatistics<Any> {
         // TODO: Implement
 
-        return Response(
+        return ResponseWithStatistics(
             data = null,
             statistics = Statistics()
         )
