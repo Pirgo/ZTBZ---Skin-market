@@ -13,6 +13,9 @@ class MovieController {
     fun getMovies(
         @RequestParam(value = "sort", required = false) sort: GetMoviesSorting?,
         @RequestParam(value = "sorting_order", required = false) sortingOrder: GetMoviesSortingOrder?,
+        @RequestParam(value = "title", required = false) title: String?,
+        @RequestParam(value = "platform_name", required = false) platformName: String?,
+        @RequestParam(value = "actor_id", required = false) actorId: Long?,
         @RequestParam(value = "genre_id", required = false) genreId: Long?,
         @RequestParam(value = "director_id", required = false) directorId: Long?,
         @RequestParam(value = "min_year", required = false) minYear: Int?,
