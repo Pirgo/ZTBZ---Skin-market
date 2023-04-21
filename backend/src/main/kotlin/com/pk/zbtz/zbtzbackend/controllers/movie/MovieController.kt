@@ -17,7 +17,7 @@ class MovieController(
     private val movieServiceFactory: MovieServiceFactory
 ) {
 
-    @GetMapping("/{movieDatabase}/movies/search")
+    @GetMapping("/{movieDatabase}/movies")
     fun getMovies(
         @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
         @RequestParam(value = "sort", required = false) sort: GetMoviesSorting?,
@@ -40,28 +40,28 @@ class MovieController(
                 offset = offset,
             )
 
-    @GetMapping("/{movie_database}/movies/{movie_id}")
+    @GetMapping("/{movieDatabase}/movies/{movieId}")
     fun getMovie(
-        @PathVariable(value = "movie_database") movieDatabase: MovieDatabase,
-        @PathVariable("movie_id") movieId: Long,
+        @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
+        @PathVariable("movieId") movieId: Long,
     ): ResponseWithStatistics<Movie> =
         movieServiceFactory
             .create(movieDatabase)
             .get(movieId = movieId)
 
-    @PostMapping("/{movie_database}/movies")
+    @PostMapping("/{movieDatabase}/movies")
     fun addMovie(
-        @PathVariable(value = "movie_database") movieDatabase: MovieDatabase,
+        @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
         @RequestBody request: AddMovieRequest
     ): ResponseWithStatistics<Movie> =
         movieServiceFactory
             .create(movieDatabase)
             .add(request = request)
 
-    @DeleteMapping("/{movie_database}/movies/{movie_id}")
+    @DeleteMapping("/{movieDatabase}/movies/{movieId}")
     fun deleteMovie(
-        @PathVariable(value = "movie_database") movieDatabase: MovieDatabase,
-        @PathVariable("movie_id") movieId: Long,
+        @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
+        @PathVariable("movieId") movieId: Long,
     ): ResponseWithStatistics<Unit> =
         movieServiceFactory
             .create(movieDatabase)
