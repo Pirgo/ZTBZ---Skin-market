@@ -1,25 +1,22 @@
 package com.pk.zbtz.zbtzbackend.controllers.movie.service
 
 import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
-import com.pk.zbtz.zbtzbackend.controllers.movie.AddMovieRequest
-import com.pk.zbtz.zbtzbackend.controllers.movie.GetMoviesSorting
-import com.pk.zbtz.zbtzbackend.controllers.movie.GetMoviesSortingOrder
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.AddMovieRequest
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesResponse
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSorting
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.domain.Movie
 
 interface MovieService {
     fun getAll(
         sort: GetMoviesSorting?,
         sortingOrder: GetMoviesSortingOrder?,
-        title: String?,
-        platformName: String?,
-        actorId: Long?,
-        genreId: Long?,
-        directorId: Long?,
-        minYear: Int?,
-        maxYear: Int?,
-        minRating: Float?,
-        maxRating: Float?
-    ): ResponseWithStatistics<List<Movie>>
+        titleToSearch: String,
+        platformName: String,
+        year: Int,
+        pageSize: Int,
+        offset: Int,
+    ): ResponseWithStatistics<GetMoviesResponse>
 
     fun get(
         movieId: Long,

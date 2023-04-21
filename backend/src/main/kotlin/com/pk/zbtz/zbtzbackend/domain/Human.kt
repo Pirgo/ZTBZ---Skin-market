@@ -4,16 +4,17 @@ import java.time.LocalDate
 
 data class Human(
     val id: Long,
-    val name: String,
-    val photoUrl: String,
+    val firstName: String,
+    val secondName: String,
+    val photoUrl: String?,
     val birthday: LocalDate,
     val placeOfBirth: String,
     val deathDay: LocalDate?,
+    val description: String,
     val functions: FunctionsValue,
 ) {
     data class FunctionsValue(
         val director: List<Function.Director>,
-        val writer: List<Function.Writer>,
         val actor: List<Function.Actor>
     ) {
         sealed interface Function {
@@ -21,11 +22,6 @@ data class Human(
             val title: String
 
             data class Director(
-                override val filmId: Long,
-                override val title: String,
-            ) : Function
-
-            data class Writer(
                 override val filmId: Long,
                 override val title: String,
             ) : Function

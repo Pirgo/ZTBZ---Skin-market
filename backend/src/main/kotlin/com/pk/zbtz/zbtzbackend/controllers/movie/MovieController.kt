@@ -2,8 +2,13 @@ package com.pk.zbtz.zbtzbackend.controllers.movie
 
 import com.pk.zbtz.zbtzbackend.controllers.MovieDatabase
 import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.AddMovieRequest
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesResponse
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSorting
+import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.controllers.movie.service.MovieServiceFactory
 import com.pk.zbtz.zbtzbackend.domain.Movie
+import com.pk.zbtz.zbtzbackend.domain.MovieSummary
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -12,35 +17,27 @@ class MovieController(
     private val movieServiceFactory: MovieServiceFactory
 ) {
 
-    @GetMapping("/{movie_database}/movies")
+    @GetMapping("/{movieDatabase}/movies/search")
     fun getMovies(
-        @PathVariable(value = "movie_database") movieDatabase: MovieDatabase,
+        @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
         @RequestParam(value = "sort", required = false) sort: GetMoviesSorting?,
-        @RequestParam(value = "sorting_order", required = false) sortingOrder: GetMoviesSortingOrder?,
-        @RequestParam(value = "title", required = false) title: String?,
-        @RequestParam(value = "platform_name", required = false) platformName: String?,
-        @RequestParam(value = "actor_id", required = false) actorId: Long?,
-        @RequestParam(value = "genre_id", required = false) genreId: Long?,
-        @RequestParam(value = "director_id", required = false) directorId: Long?,
-        @RequestParam(value = "min_year", required = false) minYear: Int?,
-        @RequestParam(value = "max_year", required = false) maxYear: Int?,
-        @RequestParam(value = "min_rating", required = false) minRating: Float?,
-        @RequestParam(value = "max_rating", required = false) maxRating: Float?
-    ): ResponseWithStatistics<List<Movie>> =
+        @RequestParam(value = "sorting_order", required = false) sortingOrder: GetMoviesSortingOrder? = GetMoviesSortingOrder.ASC,
+        @RequestParam(value = "searchText", required = false) titleToSearch: String,
+        @RequestParam(value = "platform", required = false) platformName: String,
+        @RequestParam(value = "year", required = false) year: Int,
+        @RequestParam(value = "pageSize", required = false) pageSize: Int,
+        @RequestParam(value = "offset", required = false) offset: Int,
+    ): ResponseWithStatistics<GetMoviesResponse> =
         movieServiceFactory
             .create(movieDatabase)
             .getAll(
                 sort = sort,
                 sortingOrder = sortingOrder,
-                title = title,
+                titleToSearch = titleToSearch,
                 platformName = platformName,
-                actorId = actorId,
-                genreId = genreId,
-                directorId = directorId,
-                minYear = minYear,
-                maxYear = maxYear,
-                minRating = minRating,
-                maxRating = maxRating,
+                year = year,
+                pageSize = pageSize,
+                offset = offset,
             )
 
     @GetMapping("/{movie_database}/movies/{movie_id}")
