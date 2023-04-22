@@ -4,7 +4,7 @@ import com.pk.zbtz.zbtzbackend.domain.HumanSummary
 
 data class GetPeopleResponse(
     val people: List<HumanSummary>,
-    val nextOffset: Int,
+    val nextOffset: Int?,
     val totalPages: Int,
     val totalRecords: Int,
 )
