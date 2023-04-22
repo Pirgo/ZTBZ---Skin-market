@@ -11,11 +11,11 @@ interface MovieService {
     fun getAll(
         sort: GetMoviesSorting?,
         sortingOrder: GetMoviesSortingOrder?,
-        titleToSearch: String,
-        platformName: String,
-        year: Int,
-        pageSize: Int,
-        offset: Int,
+        titleToSearch: String?,
+        platformName: String?,
+        year: Int?,
+        pageSize: Int?,
+        offset: Int?,
     ): ResponseWithStatistics<GetMoviesResponse>
 
     fun get(

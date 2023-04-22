@@ -22,11 +22,11 @@ class MovieController(
         @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
         @RequestParam(value = "sort", required = false) sort: GetMoviesSorting?,
         @RequestParam(value = "sorting_order", required = false) sortingOrder: GetMoviesSortingOrder? = GetMoviesSortingOrder.ASC,
-        @RequestParam(value = "searchText", required = false) titleToSearch: String,
-        @RequestParam(value = "platform", required = false) platformName: String,
-        @RequestParam(value = "year", required = false) year: Int,
-        @RequestParam(value = "pageSize", required = false) pageSize: Int,
-        @RequestParam(value = "offset", required = false) offset: Int,
+        @RequestParam(value = "searchText", required = false) titleToSearch: String?,
+        @RequestParam(value = "platform", required = false) platformName: String?,
+        @RequestParam(value = "year", required = false) year: Int?,
+        @RequestParam(value = "pageSize", required = false) pageSize: Int?,
+        @RequestParam(value = "offset", required = false) offset: Int?,
     ): ResponseWithStatistics<GetMoviesResponse> =
         movieServiceFactory
             .create(movieDatabase)
