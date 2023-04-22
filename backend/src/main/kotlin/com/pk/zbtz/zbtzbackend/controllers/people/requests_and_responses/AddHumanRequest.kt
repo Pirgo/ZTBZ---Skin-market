@@ -1,9 +1,8 @@
-package com.pk.zbtz.zbtzbackend.domain
+package com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses
 
 import java.time.LocalDate
 
-data class Human(
-    val id: Long,
+data class AddHumanRequest(
     val firstName: String,
     val secondName: String,
     val photoUrl: String?,
@@ -19,16 +18,13 @@ data class Human(
     ) {
         sealed interface Function {
             val filmId: Long
-            val title: String
 
             data class Director(
                 override val filmId: Long,
-                override val title: String,
             ) : Function
 
             data class Actor(
                 override val filmId: Long,
-                override val title: String,
             ) : Function
         }
     }

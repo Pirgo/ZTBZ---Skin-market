@@ -1,4 +1,4 @@
-package com.pk.zbtz.zbtzbackend.controllers.movie
+package com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses
 
 data class AddMovieRequest(
     val id: Long,

@@ -6,13 +6,13 @@ data class Movie(
     val platforms: List<Platform>,
     val genres: List<Genre>,
     val productionYear: Int,
-    val rating: Float?,
+    val rating: Float,
     val plot: String,
     val coverUrl: String,
-    val budget: Long,
+    val budget: Float,
+    val length: Float,
     val actors: List<MovieHuman.Actor>,
     val directors: List<MovieHuman.Director>,
-    val writers: List<MovieHuman.Writer>
 ) {
     sealed interface MovieHuman {
         val id: Long
@@ -27,12 +27,6 @@ data class Movie(
         ): MovieHuman
 
         data class Director(
-            override val id: Long,
-            override val name: String,
-            override val photoUrl: String,
-        ): MovieHuman
-
-        data class Writer(
             override val id: Long,
             override val name: String,
             override val photoUrl: String,
