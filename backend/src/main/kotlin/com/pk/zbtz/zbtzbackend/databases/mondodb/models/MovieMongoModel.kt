@@ -39,13 +39,13 @@ data class MovieMongoModel(
     }
 
     data class PlatformMovieMongo(
-        val id: String?,
+        val id: String? = null,
         val name: String,
         val logoUrl: String,
     )
 
     data class GenreMovieMongo(
-        val id: String?,
+        val id: String? = null,
         val name: String,
     )
 }
