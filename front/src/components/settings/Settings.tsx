@@ -3,7 +3,7 @@ import { setDataBase } from "../../store/slice/settings";
 import {RootState} from "../../store/store";
 const Settings = () => {
     const dispatch = useDispatch()
-    const selectedDataBase = useSelector((state: RootState) => state.dataBase)
+    const selectedDataBase = useSelector((state: RootState) => state.settings.dataBase)
 
     const isSelected = (value: string) => {
         return value === selectedDataBase

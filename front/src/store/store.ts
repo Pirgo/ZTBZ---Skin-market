@@ -1,19 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit'
+import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import settingsReducer from './slice/settings'
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import thunk from 'redux-thunk';
+import { moviesApi } from "./api/movies";
+import {peopleApi} from "./api/people";
 
 const persistConfig = {
     key: 'root',
     storage,
 }
 
-const persistedReducer = persistReducer(persistConfig, settingsReducer)
+const rootReducer = combineReducers({
+    settings: persistReducer(persistConfig, settingsReducer),
+    [moviesApi.reducerPath]: moviesApi.reducer,
+    [peopleApi.reducerPath]: peopleApi.reducer
+})
 
 export const store = configureStore({
-    reducer: persistedReducer,
-    middleware: [thunk]
+    reducer: rootReducer,
+    middleware: [thunk, moviesApi.middleware, peopleApi.middleware]
 })
 
 export type RootState = ReturnType<typeof store.getState>

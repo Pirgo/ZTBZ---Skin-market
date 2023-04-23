@@ -174,7 +174,7 @@ class FakeMovieService : MovieService {
                 productionYear = 2020,
                 rating = 7.5f,
                 plot = "A thrilling action-comedy about unlikely heroes saving the world.",
-                coverUrl = "https://example.com/movie1/cover.jpg",
+                coverUrl = "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
                 budget = 1000000.0f,
                 length = 120.0f,
                 actors = listOf(
@@ -201,7 +201,7 @@ class FakeMovieService : MovieService {
                 productionYear = 2019,
                 rating = 8.0f,
                 plot = "A heartwarming drama about love and loss.",
-                coverUrl = "https://example.com/movie2/cover.jpg",
+                coverUrl = "https://image.tmdb.org/t/p/w500/8Ls1tZ6qjGzfGHjBB7ihOnf7f0b.jpg",
                 budget = 1500000.0f,
                 length = 110.0f,
                 actors = listOf(
@@ -228,7 +228,7 @@ class FakeMovieService : MovieService {
                 productionYear = 2021,
                 rating = 8.5f,
                 plot = "A futuristic sci-fi thriller about the dangers of advanced technology.",
-                coverUrl = "https://example.com/movie3/cover.jpg",
+                coverUrl = "https://image.tmdb.org/t/p/w500/AtsgWhDnHTq68L0lLsUrCnM7TjG.jpg",
                 budget = 2000000.0f,
                 length = 130.0f,
                 actors = listOf(
@@ -255,7 +255,7 @@ class FakeMovieService : MovieService {
                 productionYear = 2018,
                 rating = 7.0f,
                 plot = "A family-friendly adventure about a group of friends discovering a hidden world.",
-                coverUrl = "https://example.com/movie4/cover.jpg",
+                coverUrl = "https://image.tmdb.org/t/p/w500/xvx4Yhf0DVH8G4LzNISpMfFBDy2.jpg",
                 budget = 1200000.0f,
                 length = 100.0f,
                 actors = listOf(
@@ -282,7 +282,7 @@ class FakeMovieService : MovieService {
                 productionYear = 2022,
                 rating = 6.5f,
                 plot = "A chilling horror mystery where a group of friends must uncover the truth behind a terrifying secret.",
-                coverUrl = "https://example.com/movie5/cover.jpg",
+                coverUrl = "https://image.tmdb.org/t/p/w500/svIDTNUoajS8dLEo7EosxvyAsgJ.jpg",
                 budget = 800000.0f,
                 length = 90.0f,
                 actors = listOf(
