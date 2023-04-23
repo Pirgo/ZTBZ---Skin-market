@@ -11,6 +11,7 @@ import com.pk.zbtz.zbtzbackend.domain.Genre
 import com.pk.zbtz.zbtzbackend.domain.Movie
 import com.pk.zbtz.zbtzbackend.domain.MovieSummary
 import com.pk.zbtz.zbtzbackend.domain.Statistics
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -28,25 +29,9 @@ class MongoMovieService(
         pageSize: Int?,
         offset: Int?
     ): ResponseWithStatistics<GetMoviesResponse> {
-        val sortOrder = sortingOrder?.let {
-            when (it) {
-                GetMoviesSortingOrder.ASC -> Sort.Direction.ASC
-                GetMoviesSortingOrder.DESC -> Sort.Direction.DESC
-            }
-        } ?: Sort.Direction.ASC
-
-        val sortField = sort?.let {
-            when (it) {
-                GetMoviesSorting.ID -> "id"
-                GetMoviesSorting.TITLE -> "title"
-                GetMoviesSorting.PRODUCTION_YEAR -> "productionYear"
-                GetMoviesSorting.RATING -> "rating"
-                GetMoviesSorting.PLATFORM -> "platforms.name" // Assuming that you want to sort by the platform name
-                GetMoviesSorting.GENRE -> "genres.name" // Assuming that you want to sort by the genre name
-            }
-        } ?: "id"
-
-        val pageRequest = PageRequest.of(offset ?: 0, pageSize ?: 10, Sort.by(sortOrder, sortField))
+        val sortOrder = getSortingDirection(sortingOrder)
+        val sortField = getSortFieldName(sort)
+        val pageRequest = createPageRequest(offset ?: 0, pageSize ?: 10, sortOrder, sortField)
 
         val moviesPage = when (year) {
             null -> repository.findAllByFilters(titleToSearch.orEmpty(), platformName.orEmpty(), pageRequest)
@@ -54,8 +39,7 @@ class MongoMovieService(
         }
 
         val movieSummaries = moviesPage.content.map { it.toMovieSummary() }
-
-        val nextOffset = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
+        val nextOffset = calculateNextOffset(moviesPage, offset, pageSize)
         val response = GetMoviesResponse(
             movies = movieSummaries,
             nextOffset = nextOffset,
@@ -63,13 +47,40 @@ class MongoMovieService(
             totalRecords = moviesPage.totalElements.toInt()
         )
 
-        val statistics = Statistics()
+        val statistics = Statistics()       // TODO: Calculate statistics
 
         return ResponseWithStatistics(
             data = response,
             statistics = statistics
         )
     }
+
+    private fun getSortingDirection(sortingOrder: GetMoviesSortingOrder?): Sort.Direction =
+        sortingOrder?.let {
+            when (it) {
+                GetMoviesSortingOrder.ASC -> Sort.Direction.ASC
+                GetMoviesSortingOrder.DESC -> Sort.Direction.DESC
+            }
+        } ?: Sort.Direction.ASC
+
+    private fun getSortFieldName(sort: GetMoviesSorting?): String =
+        sort?.let {
+            when (it) {
+                GetMoviesSorting.ID -> "id"
+                GetMoviesSorting.TITLE -> "title"
+                GetMoviesSorting.PRODUCTION_YEAR -> "productionYear"
+                GetMoviesSorting.RATING -> "rating"
+                GetMoviesSorting.PLATFORM -> "platforms.name"
+                GetMoviesSorting.GENRE -> "genres.name"
+            }
+        } ?: "id"
+
+    private fun createPageRequest(
+        offset: Int,
+        pageSize: Int,
+        sortOrder: Sort.Direction,
+        sortField: String
+    ): PageRequest = PageRequest.of(offset, pageSize, Sort.by(sortOrder, sortField))
 
     private fun MovieMongoModel.toMovieSummary(): MovieSummary =
         MovieSummary(
@@ -85,6 +96,12 @@ class MongoMovieService(
                 )
             },
         )
+
+    private fun calculateNextOffset(
+        moviesPage: Page<MovieMongoModel>,
+        offset: Int?,
+        pageSize: Int?
+    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
 
     override fun get(movieId: Long): ResponseWithStatistics<Movie> {
         TODO("Not yet implemented")
