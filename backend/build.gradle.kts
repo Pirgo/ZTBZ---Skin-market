@@ -21,7 +21,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.0.6")
+    implementation("io.github.serpro69:kotlin-faker:1.14.0") // Used to generate fake data
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
