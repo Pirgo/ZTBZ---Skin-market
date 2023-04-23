@@ -6,6 +6,7 @@ import io.github.serpro69.kfaker.Faker
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import kotlin.math.abs
 
 @Service
 class DummyMongoDataService(
@@ -17,16 +18,14 @@ class DummyMongoDataService(
         val numberOfMovies = 10
 
         repeat(numberOfMovies) {
-            val movie = generateFakeMovie(faker)
-
-            movieRepository.save(movie)
+            generateFakeMovie(faker).let(movieRepository::save)
         }
     }
 
     private fun generateFakeMovie(faker: Faker): MovieMongoModel {
         val platforms = (1..3).map {
             MovieMongoModel.PlatformMovieMongo(
-                id = null,
+                id = faker.randomId(),
                 name = faker.app.name(),
                 logoUrl = faker.randomUrl()
             )
@@ -34,14 +33,14 @@ class DummyMongoDataService(
 
         val genres = (1..3).map {
             MovieMongoModel.GenreMovieMongo(
-                id = null,
+                id = faker.randomId(),
                 name = faker.book.genre()
             )
         }
 
         val actors = (1..5).map {
             MovieMongoModel.HumanMovieMongo.Actor(
-                id = null,
+                id = faker.randomId(),
                 name = faker.name.name(),
                 photoUrl = faker.randomUrl(),
                 character = faker.superhero.name()
@@ -50,14 +49,14 @@ class DummyMongoDataService(
 
         val directors = (1..2).map {
             MovieMongoModel.HumanMovieMongo.Director(
-                id = null,
+                id = faker.randomId(),
                 name = faker.name.name(),
                 photoUrl = faker.randomUrl()
             )
         }
 
         return MovieMongoModel(
-            id = null,
+            databaseId = null,
             title = faker.movie.title(),
             platforms = platforms,
             genres = genres,
@@ -68,10 +67,13 @@ class DummyMongoDataService(
             budget = faker.random.nextFloat() * 300_000_000,
             length = faker.random.nextInt(60, 180).toFloat(),
             actors = actors,
-            directors = directors
+            directors = directors,
         )
     }
 
     private fun Faker.randomUrl(): String =
         this.string.numerify("www.example####.com")
+    
+    private fun Faker.randomId(): Long =
+        this.random.nextLong(Long.MAX_VALUE).let(::abs)
 }

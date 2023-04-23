@@ -84,14 +84,14 @@ class MongoMovieService(
 
     private fun MovieMongoModel.toMovieSummary(): MovieSummary =
         MovieSummary(
-            id = 1L,    // TODO: Change String -> Long
+            id = id,
             title = title,
             productionYear = productionYear,
             length = length,
             coverUrl = coverUrl,
             genres = genres.map {
                 Genre(
-                    id = 1L,     // TODO: Change String -> Long
+                    id = it.id,
                     name = it.name
                 )
             },
