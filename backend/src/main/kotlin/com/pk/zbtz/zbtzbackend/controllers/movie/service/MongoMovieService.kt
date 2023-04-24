@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class MongoMovieService(
@@ -81,14 +82,14 @@ class MongoMovieService(
 
     private fun MovieMongoModel.toMovieSummary(): MovieSummary =
         MovieSummary(
-            id = id,
+            id = id.orEmpty(),
             title = title,
             productionYear = productionYear,
             length = length,
             coverUrl = coverUrl,
             genres = genres.map {
                 Genre(
-                    id = it.id,
+                    id = it.id.orEmpty(),
                     name = it.name
                 )
             },
@@ -100,10 +101,12 @@ class MongoMovieService(
         pageSize: Int?
     ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
 
-    override fun get(movieId: Long): ResponseWithStatistics<Movie> {
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun get(movieId: String): ResponseWithStatistics<Movie> {
         val movie = repository
-            .findById(movieId)!!
-            .toMovie()
+            .findById(movieId)
+            .getOrNull()
+            ?.toMovie()
 
         return ResponseWithStatistics(
             data = movie,
@@ -113,25 +116,25 @@ class MongoMovieService(
 
     fun MovieMongoModel.toMovie(): Movie =
         Movie(
-            id = this.id,
+            id = this.id.orEmpty(),
             title = this.title,
-            platforms = this.platforms.map { Platform(it.id, it.name, it.logoUrl) },
-            genres = this.genres.map { Genre(it.id, it.name) },
+            platforms = this.platforms.map { Platform(it.id.orEmpty(), it.name, it.logoUrl) },
+            genres = this.genres.map { Genre(it.id.orEmpty(), it.name) },
             productionYear = this.productionYear,
             rating = this.rating,
             plot = this.plot,
             coverUrl = this.coverUrl,
             budget = this.budget,
             length = this.length,
-            actors = this.actors.map { Movie.MovieHuman.Actor(it.id, it.name, it.photoUrl, it.character) },
-            directors = this.directors.map { Movie.MovieHuman.Director(it.id, it.name, it.photoUrl) }
+            actors = this.actors.map { Movie.MovieHuman.Actor(it.id.orEmpty(), it.name, it.photoUrl, it.character) },
+            directors = this.directors.map { Movie.MovieHuman.Director(it.id.orEmpty(), it.name, it.photoUrl) }
         )
 
     override fun add(request: AddMovieRequest): ResponseWithStatistics<Movie> {
         TODO("Not yet implemented")
     }
 
-    override fun delete(movieId: Long): ResponseWithStatistics<Unit> {
+    override fun delete(movieId: String): ResponseWithStatistics<Unit> {
         TODO("Not yet implemented")
     }
 }

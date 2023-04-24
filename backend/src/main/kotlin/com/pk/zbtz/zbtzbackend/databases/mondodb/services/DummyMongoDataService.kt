@@ -56,7 +56,7 @@ class DummyMongoDataService(
         }
 
         return MovieMongoModel(
-            databaseId = null,
+            id = null,
             title = faker.movie.title(),
             platforms = platforms,
             genres = genres,
@@ -74,6 +74,6 @@ class DummyMongoDataService(
     private fun Faker.randomUrl(): String =
         this.string.numerify("www.example####.com")
     
-    private fun Faker.randomId(): Long =
-        this.random.nextLong(Long.MAX_VALUE).let(::abs)
+    private fun Faker.randomId(): String =
+        this.random.nextLong(Long.MAX_VALUE).let(::abs).toString()
 }
