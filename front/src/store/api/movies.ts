@@ -19,7 +19,7 @@ export const moviesApi = createApi({
 export const { useGetMoviesQuery, useGetMovieQuery } = moviesApi
 
 export interface Movie {
-    id: number,
+    id: string,
     title: string,
     productionYear: number,
     length: number,
@@ -28,12 +28,12 @@ export interface Movie {
 }
 
 export interface MovieGenre {
-    id: number,
+    id: string,
     name: string,
 }
 
 export interface Platform {
-    id: number,
+    id: string,
     name: string,
     logoUrl: string,
 }
@@ -58,7 +58,7 @@ export interface MoviesRequest {
 }
 
 export interface MovieDetails {
-    id: number,
+    id: string,
     title: string,
     platforms: Platform[],
     genres: MovieGenre[],
@@ -78,5 +78,5 @@ export interface MovieDetailsResponse {
 
 export interface MovieDetailsRequest {
     movieDatabase: DataBase
-    id: number,
+    id: string,
 }

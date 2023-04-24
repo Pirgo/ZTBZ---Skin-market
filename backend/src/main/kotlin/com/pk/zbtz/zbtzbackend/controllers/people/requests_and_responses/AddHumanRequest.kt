@@ -17,14 +17,14 @@ data class AddHumanRequest(
         val actor: List<Function.Actor>
     ) {
         sealed interface Function {
-            val filmId: Long
+            val filmId: String
 
             data class Director(
-                override val filmId: Long,
+                override val filmId: String,
             ) : Function
 
             data class Actor(
-                override val filmId: Long,
+                override val filmId: String,
             ) : Function
         }
     }

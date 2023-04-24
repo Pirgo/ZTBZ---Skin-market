@@ -20,14 +20,14 @@ export const peopleApi = createApi({
 export const { useGetPeopleQuery, useGetPersonQuery } = peopleApi
 
 export interface Human {
-    id: number,
+    id: string,
     firstName: string,
     secondName?: string,
     photoUrl: string,
 }
 
 export interface HumanDetails {
-    id: number,
+    id: string,
     firstName: string,
     secondName: string,
     photoUrl: string,
@@ -43,7 +43,7 @@ export interface HumanDetails {
 }
 
 export interface MovieRoleData {
-    filmId: number,
+    filmid: string,
     title: string,
 }
 
@@ -68,5 +68,5 @@ export interface PeopleRequest {
 
 export interface HumanDetailsRequest {
     movieDatabase: DataBase
-    id: number
+    id: string
 }

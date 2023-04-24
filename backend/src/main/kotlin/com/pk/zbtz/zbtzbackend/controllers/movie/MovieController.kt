@@ -43,7 +43,7 @@ class MovieController(
     @GetMapping("/{movieDatabase}/movies/{movieId}")
     fun getMovie(
         @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
-        @PathVariable("movieId") movieId: Long,
+        @PathVariable("movieId") movieId: String,
     ): ResponseWithStatistics<Movie> =
         movieServiceFactory
             .create(movieDatabase)
@@ -61,7 +61,7 @@ class MovieController(
     @DeleteMapping("/{movieDatabase}/movies/{movieId}")
     fun deleteMovie(
         @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
-        @PathVariable("movieId") movieId: Long,
+        @PathVariable("movieId") movieId: String,
     ): ResponseWithStatistics<Unit> =
         movieServiceFactory
             .create(movieDatabase)

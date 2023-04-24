@@ -32,7 +32,7 @@ class PeopleController(
     @GetMapping("/{movieDatabase}/people/{humanId}")
     fun getHuman(
         @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
-        @PathVariable("humanId") humanId: Long,
+        @PathVariable("humanId") humanId: String,
     ): ResponseWithStatistics<Human> =
         peopleServiceFactory
             .create(movieDatabase)
@@ -50,7 +50,7 @@ class PeopleController(
     @DeleteMapping("{movieDatabase}/people/{humanId}")
     fun deleteHuman(
         @PathVariable(value = "movieDatabase") movieDatabase: MovieDatabase,
-        @PathVariable("humanId") humanId: Long,
+        @PathVariable("humanId") humanId: String,
     ): ResponseWithStatistics<Unit> =
         peopleServiceFactory
             .create(movieDatabase)

@@ -19,7 +19,7 @@ interface MovieService {
     ): ResponseWithStatistics<GetMoviesResponse>
 
     fun get(
-        movieId: Long,
+        movieId: String,
     ): ResponseWithStatistics<Movie>
 
     fun add(
@@ -27,6 +27,6 @@ interface MovieService {
     ): ResponseWithStatistics<Movie>
 
     fun delete(
-        movieId: Long
+        movieId: String
     ): ResponseWithStatistics<Unit>
 }

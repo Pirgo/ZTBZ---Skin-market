@@ -12,9 +12,9 @@ interface PeopleService {
         offset: Int?,
     ): ResponseWithStatistics<GetPeopleResponse>
 
-    fun get(humanId: Long): ResponseWithStatistics<Human>
+    fun get(humanId: String): ResponseWithStatistics<Human>
 
     fun add(request: AddHumanRequest): ResponseWithStatistics<Human>
 
-    fun delete(humanId: Long): ResponseWithStatistics<Unit>
+    fun delete(humanId: String): ResponseWithStatistics<Unit>
 }
