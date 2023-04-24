@@ -3,7 +3,7 @@ package com.pk.zbtz.zbtzbackend.domain
 import java.time.LocalDate
 
 data class Human(
-    val id: Long,
+    val id: String,
     val firstName: String,
     val secondName: String,
     val photoUrl: String?,
@@ -18,16 +18,16 @@ data class Human(
         val actor: List<Function.Actor>
     ) {
         sealed interface Function {
-            val filmId: Long
+            val filmId: String
             val title: String
 
             data class Director(
-                override val filmId: Long,
+                override val filmId: String,
                 override val title: String,
             ) : Function
 
             data class Actor(
-                override val filmId: Long,
+                override val filmId: String,
                 override val title: String,
             ) : Function
         }

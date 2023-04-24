@@ -1,7 +1,7 @@
 package com.pk.zbtz.zbtzbackend.domain
 
 data class MovieSummary(
-    val id: Long,
+    val id: String,
     val title: String,
     val productionYear: Int,
     val length: Float,
