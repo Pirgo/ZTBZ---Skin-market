@@ -95,7 +95,7 @@ class FakeMovieService : MovieService {
             genres = movie.genres
         )
 
-    override fun get(movieId: Long): ResponseWithStatistics<Movie> =
+    override fun get(movieId: String): ResponseWithStatistics<Movie> =
         ResponseWithStatistics(
             data = movies.find { it.id == movieId },
             statistics = dummyStatistics,
@@ -155,7 +155,7 @@ class FakeMovieService : MovieService {
         )
     }
 
-    override fun delete(movieId: Long): ResponseWithStatistics<Unit> {
+    override fun delete(movieId: String): ResponseWithStatistics<Unit> {
         val movieToRemove = movies.find { it.id == movieId }
         movies.remove(movieToRemove)
 
@@ -167,10 +167,10 @@ class FakeMovieService : MovieService {
     private companion object {
         val dummyMovies = listOf(
             Movie(
-                id = 1L,
+                id = "1",
                 title = "Example Movie 1",
-                platforms = listOf(Platform(1L, "Platform 1", "https://example.com/platform1/logo.jpg")),
-                genres = listOf(Genre(1L, "Action"), Genre(2L, "Comedy")),
+                platforms = listOf(Platform("1", "Platform 1", "https://example.com/platform1/logo.jpg")),
+                genres = listOf(Genre("1", "Action"), Genre("2", "Comedy")),
                 productionYear = 2020,
                 rating = 7.5f,
                 plot = "A thrilling action-comedy about unlikely heroes saving the world.",
@@ -179,7 +179,7 @@ class FakeMovieService : MovieService {
                 length = 120.0f,
                 actors = listOf(
                     Movie.MovieHuman.Actor(
-                        id = 1L,
+                        id = "1",
                         name = "Actor 1",
                         photoUrl = "https://example.com/actor1/photo.jpg",
                         character = "Hero 1"
@@ -187,17 +187,17 @@ class FakeMovieService : MovieService {
                 ),
                 directors = listOf(
                     Movie.MovieHuman.Director(
-                        id = 1L,
+                        id = "1",
                         name = "Director 1",
                         photoUrl = "https://example.com/director1/photo.jpg"
                     )
                 )
             ),
             Movie(
-                id = 2L,
+                id = "2",
                 title = "Example Movie 2",
-                platforms = listOf(Platform(2L, "Platform 2", "https://example.com/platform2/logo.jpg")),
-                genres = listOf(Genre(3L, "Drama"), Genre(4L, "Romance")),
+                platforms = listOf(Platform("2", "Platform 2", "https://example.com/platform2/logo.jpg")),
+                genres = listOf(Genre("3", "Drama"), Genre("4", "Romance")),
                 productionYear = 2019,
                 rating = 8.0f,
                 plot = "A heartwarming drama about love and loss.",
@@ -206,7 +206,7 @@ class FakeMovieService : MovieService {
                 length = 110.0f,
                 actors = listOf(
                     Movie.MovieHuman.Actor(
-                        id = 2L,
+                        id = "2",
                         name = "Actor 2",
                         photoUrl = "https://example.com/actor2/photo.jpg",
                         character = "Main character"
@@ -214,17 +214,17 @@ class FakeMovieService : MovieService {
                 ),
                 directors = listOf(
                     Movie.MovieHuman.Director(
-                        id = 2L,
+                        id = "2",
                         name = "Director 2",
                         photoUrl = "https://example.com/director2/photo.jpg"
                     )
                 )
             ),
             Movie(
-                id = 3L,
+                id = "3",
                 title = "Example Movie 3",
-                platforms = listOf(Platform(3L, "Platform 3", "https://example.com/platform3/logo.jpg")),
-                genres = listOf(Genre(5L, "Science Fiction"), Genre(6L, "Thriller")),
+                platforms = listOf(Platform("3", "Platform 3", "https://example.com/platform3/logo.jpg")),
+                genres = listOf(Genre("5", "Science Fiction"), Genre("6", "Thriller")),
                 productionYear = 2021,
                 rating = 8.5f,
                 plot = "A futuristic sci-fi thriller about the dangers of advanced technology.",
@@ -233,7 +233,7 @@ class FakeMovieService : MovieService {
                 length = 130.0f,
                 actors = listOf(
                     Movie.MovieHuman.Actor(
-                        id = 3L,
+                        id = "3",
                         name = "Actor 3",
                         photoUrl = "https://example.com/actor3/photo.jpg",
                         character = "Protagonist"
@@ -241,17 +241,17 @@ class FakeMovieService : MovieService {
                 ),
                 directors = listOf(
                     Movie.MovieHuman.Director(
-                        id = 3L,
+                        id = "3",
                         name = "Director 3",
                         photoUrl = "https://example.com/director3/photo.jpg"
                     )
                 )
             ),
             Movie(
-                id = 4L,
+                id = "4",
                 title = "Example Movie 4",
-                platforms = listOf(Platform(4L, "Platform 4", "https://example.com/platform4/logo.jpg")),
-                genres = listOf(Genre(7L, "Adventure"), Genre(8L, "Family")),
+                platforms = listOf(Platform("4", "Platform 4", "https://example.com/platform4/logo.jpg")),
+                genres = listOf(Genre("7", "Adventure"), Genre("8", "Family")),
                 productionYear = 2018,
                 rating = 7.0f,
                 plot = "A family-friendly adventure about a group of friends discovering a hidden world.",
@@ -260,7 +260,7 @@ class FakeMovieService : MovieService {
                 length = 100.0f,
                 actors = listOf(
                     Movie.MovieHuman.Actor(
-                        id = 4L,
+                        id = "4",
                         name = "Actor 4",
                         photoUrl = "https://example.com/actor4/photo.jpg",
                         character = "Explorer"
@@ -268,17 +268,17 @@ class FakeMovieService : MovieService {
                 ),
                 directors = listOf(
                     Movie.MovieHuman.Director(
-                        id = 4L,
+                        id = "4",
                         name = "Director 4",
                         photoUrl = "https://example.com/director4/photo.jpg"
                     )
                 )
             ),
             Movie(
-                id = 5L,
+                id = "5",
                 title = "Example Movie 5",
-                platforms = listOf(Platform(5L, "Platform 5", "https://example.com/platform5/logo.jpg")),
-                genres = listOf(Genre(9L, "Horror"), Genre(10L, "Mystery")),
+                platforms = listOf(Platform("5", "Platform 5", "https://example.com/platform5/logo.jpg")),
+                genres = listOf(Genre("9", "Horror"), Genre("10", "Mystery")),
                 productionYear = 2022,
                 rating = 6.5f,
                 plot = "A chilling horror mystery where a group of friends must uncover the truth behind a terrifying secret.",
@@ -287,7 +287,7 @@ class FakeMovieService : MovieService {
                 length = 90.0f,
                 actors = listOf(
                     Movie.MovieHuman.Actor(
-                        id = 5L,
+                        id = "5",
                         name = "Actor 5",
                         photoUrl = "https://example.com/actor5/photo.jpg",
                         character = "Survivor"
@@ -295,7 +295,7 @@ class FakeMovieService : MovieService {
                 ),
                 directors = listOf(
                     Movie.MovieHuman.Director(
-                        id = 5L,
+                        id = "5",
                         name = "Director 5",
                         photoUrl = "https://example.com/director5/photo.jpg"
                     )

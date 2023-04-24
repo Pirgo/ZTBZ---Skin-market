@@ -58,7 +58,7 @@ class FakePeopleService : PeopleService {
         )
     }
 
-    override fun get(humanId: Long): ResponseWithStatistics<Human> {
+    override fun get(humanId: String): ResponseWithStatistics<Human> {
         val human = dummyHumans.find { it.id == humanId }
 
         return ResponseWithStatistics(
@@ -102,7 +102,7 @@ class FakePeopleService : PeopleService {
         )
     }
 
-    override fun delete(humanId: Long): ResponseWithStatistics<Unit> {
+    override fun delete(humanId: String): ResponseWithStatistics<Unit> {
         val human = dummyHumans.find { it.id == humanId }
 
         dummyHumans.remove(human)
@@ -115,7 +115,7 @@ class FakePeopleService : PeopleService {
     private companion object {
         val dummyPeople = listOf(
             Human(
-                id = 1L,
+                id = "1",
                 firstName = "John",
                 secondName = "Doe",
                 photoUrl = "https://image.tmdb.org/t/p/w500/pVHspL9QWsXCm3t3VXEaCJ9y8Zz.jpg",
@@ -125,16 +125,16 @@ class FakePeopleService : PeopleService {
                 description = "John Doe is an American actor and director.",
                 functions = Human.FunctionsValue(
                     director = listOf(
-                        Human.FunctionsValue.Function.Director(filmId = 1L, title = "Movie 1")
+                        Human.FunctionsValue.Function.Director(filmId = "1", title = "Movie 1")
                     ),
                     actor = listOf(
-                        Human.FunctionsValue.Function.Actor(filmId = 1L, title = "Movie 1"),
-                        Human.FunctionsValue.Function.Actor(filmId = 2L, title = "Movie 2")
+                        Human.FunctionsValue.Function.Actor(filmId = "1", title = "Movie 1"),
+                        Human.FunctionsValue.Function.Actor(filmId = "2", title = "Movie 2")
                     )
                 )
             ),
             Human(
-                id = 2L,
+                id = "2",
                 firstName = "Jane",
                 secondName = "Doe",
                 photoUrl = "https://image.tmdb.org/t/p/w500/usR5NspRlWgXKUe9qVsCtTCpe4l.jpg",
@@ -145,13 +145,13 @@ class FakePeopleService : PeopleService {
                 functions = Human.FunctionsValue(
                     director = emptyList(),
                     actor = listOf(
-                        Human.FunctionsValue.Function.Actor(filmId = 2L, title = "Movie 2"),
-                        Human.FunctionsValue.Function.Actor(filmId = 3L, title = "Movie 3")
+                        Human.FunctionsValue.Function.Actor(filmId = "2", title = "Movie 2"),
+                        Human.FunctionsValue.Function.Actor(filmId = "3", title = "Movie 3")
                     )
                 )
             ),
             Human(
-                id = 3L,
+                id = "3",
                 firstName = "Michael",
                 secondName = "Smith",
                 photoUrl = "https://image.tmdb.org/t/p/w500/usR5NspRlWgXKUe9qVsCtTCpe4l.jpg",
@@ -161,14 +161,14 @@ class FakePeopleService : PeopleService {
                 description = "Michael Smith is an American director and producer.",
                 functions = Human.FunctionsValue(
                     director = listOf(
-                        Human.FunctionsValue.Function.Director(filmId = 3L, title = "Movie 3"),
-                        Human.FunctionsValue.Function.Director(filmId = 4L, title = "Movie 4")
+                        Human.FunctionsValue.Function.Director(filmId = "3", title = "Movie 3"),
+                        Human.FunctionsValue.Function.Director(filmId = "4", title = "Movie 4")
                     ),
                     actor = emptyList()
                 )
             ),
             Human(
-                id = 4L,
+                id = "4",
                 firstName = "Emma",
                 secondName = "Brown",
                 photoUrl = "https://image.tmdb.org/t/p/w500/usR5NspRlWgXKUe9qVsCtTCpe4l.jpg",
@@ -179,13 +179,13 @@ class FakePeopleService : PeopleService {
                 functions = Human.FunctionsValue(
                     director = emptyList(),
                     actor = listOf(
-                        Human.FunctionsValue.Function.Actor(filmId = 4L, title = "Movie 4"),
-                        Human.FunctionsValue.Function.Actor(filmId = 5L, title = "Movie 5")
+                        Human.FunctionsValue.Function.Actor(filmId = "4", title = "Movie 4"),
+                        Human.FunctionsValue.Function.Actor(filmId = "5", title = "Movie 5")
                     )
                 )
             ),
             Human(
-                id = 5L,
+                id = "5",
                 firstName = "David",
                 secondName = "Johnson",
                 photoUrl = "https://image.tmdb.org/t/p/w500/usR5NspRlWgXKUe9qVsCtTCpe4l.jpg",
@@ -195,12 +195,12 @@ class FakePeopleService : PeopleService {
                 description = "David Johnson is an Australian actor and director.",
                 functions = Human.FunctionsValue(
                     director = listOf(
-                        Human.FunctionsValue.Function.Director(filmId = 5L, title = "Movie 5")
+                        Human.FunctionsValue.Function.Director(filmId = "5", title = "Movie 5")
                     ),
                     actor = listOf(
-                        Human.FunctionsValue.Function.Actor(filmId = 1L, title = "Movie 1"),
-                        Human.FunctionsValue.Function.Actor(filmId = 3L, title = "Movie 3"),
-                        Human.FunctionsValue.Function.Actor(filmId = 5L, title = "Movie 5")
+                        Human.FunctionsValue.Function.Actor(filmId = "1", title = "Movie 1"),
+                        Human.FunctionsValue.Function.Actor(filmId = "3", title = "Movie 3"),
+                        Human.FunctionsValue.Function.Actor(filmId = "5", title = "Movie 5")
                     )
                 )
             )

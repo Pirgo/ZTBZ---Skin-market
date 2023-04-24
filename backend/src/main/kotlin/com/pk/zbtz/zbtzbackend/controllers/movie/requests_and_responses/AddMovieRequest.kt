@@ -1,10 +1,10 @@
 package com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses
 
 data class AddMovieRequest(
-    val id: Long,
+    val id: String,
     val title: String,
-    val platformIds: List<Long>,
-    val genreIds: List<Long>,
+    val platformIds: List<String>,
+    val genreIds: List<String>,
     val productionYear: Int,
     val rating: Float?,
     val plot: String,
@@ -15,19 +15,19 @@ data class AddMovieRequest(
     val writers: List<AddMovieHuman.Writer>
 ) {
     sealed interface AddMovieHuman {
-        val id: Long
+        val id: String
 
         data class Actor(
-            override val id: Long,
+            override val id: String,
             val character: String,
         ): AddMovieHuman
 
         data class Director(
-            override val id: Long,
+            override val id: String,
         ): AddMovieHuman
 
         data class Writer(
-            override val id: Long,
+            override val id: String,
         ): AddMovieHuman
     }
 }
