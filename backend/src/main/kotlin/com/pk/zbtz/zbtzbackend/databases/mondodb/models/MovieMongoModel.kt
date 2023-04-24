@@ -19,11 +19,10 @@ data class MovieMongoModel(
     val actors: List<HumanMovieMongo.Actor>,
     val directors: List<HumanMovieMongo.Director>,
 ) {
-    val id: Long get() =
+    val id: Long =
         databaseId
             ?.takeLast(12)
             ?.toLong(16) ?: 0L
-
 
     sealed interface HumanMovieMongo {
         val id: Long

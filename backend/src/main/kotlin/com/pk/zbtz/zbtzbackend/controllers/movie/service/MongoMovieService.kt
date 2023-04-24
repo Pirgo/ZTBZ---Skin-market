@@ -7,10 +7,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
-import com.pk.zbtz.zbtzbackend.domain.Genre
-import com.pk.zbtz.zbtzbackend.domain.Movie
-import com.pk.zbtz.zbtzbackend.domain.MovieSummary
-import com.pk.zbtz.zbtzbackend.domain.Statistics
+import com.pk.zbtz.zbtzbackend.domain.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -104,8 +101,31 @@ class MongoMovieService(
     ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
 
     override fun get(movieId: Long): ResponseWithStatistics<Movie> {
-        TODO("Not yet implemented")
+        val movie = repository
+            .findById(movieId)!!
+            .toMovie()
+
+        return ResponseWithStatistics(
+            data = movie,
+            statistics = Statistics()
+        )
     }
+
+    fun MovieMongoModel.toMovie(): Movie =
+        Movie(
+            id = this.id,
+            title = this.title,
+            platforms = this.platforms.map { Platform(it.id, it.name, it.logoUrl) },
+            genres = this.genres.map { Genre(it.id, it.name) },
+            productionYear = this.productionYear,
+            rating = this.rating,
+            plot = this.plot,
+            coverUrl = this.coverUrl,
+            budget = this.budget,
+            length = this.length,
+            actors = this.actors.map { Movie.MovieHuman.Actor(it.id, it.name, it.photoUrl, it.character) },
+            directors = this.directors.map { Movie.MovieHuman.Director(it.id, it.name, it.photoUrl) }
+        )
 
     override fun add(request: AddMovieRequest): ResponseWithStatistics<Movie> {
         TODO("Not yet implemented")

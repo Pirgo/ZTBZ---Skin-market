@@ -23,4 +23,6 @@ interface MovieMongoRepository : MongoRepository<MovieMongoModel, String> {
         platformName: String,
         pageable: Pageable
     ): Page<MovieMongoModel>
+
+    fun findById(id: Long): MovieMongoModel?
 }
