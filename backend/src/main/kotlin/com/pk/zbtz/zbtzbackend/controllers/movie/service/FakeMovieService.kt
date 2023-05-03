@@ -135,7 +135,7 @@ class FakeMovieService : MovieService {
         }
 
         val newMovie = Movie(
-            id = movies.maxOf { it.id } + 1,
+            id = (movies.maxOf { it.id }.toInt() + 1).toString(),
             title = request.title,
             platforms = platforms,
             genres = genres,
@@ -305,7 +305,7 @@ class FakeMovieService : MovieService {
 
         val dummyStatistics = Statistics(
             accessTime = 1000,
-            databaseMemorySize = 2137,
+            databaseMemorySize = 2137.0,
         )
     }
 }

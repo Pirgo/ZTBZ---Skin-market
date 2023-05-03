@@ -6,6 +6,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSorting
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
+import com.pk.zbtz.zbtzbackend.databases.mondodb.providers.MongoMemorySizeProvider
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
 import com.pk.zbtz.zbtzbackend.domain.*
 import com.pk.zbtz.zbtzbackend.utils.execution_timer.ExecutionTimer
@@ -19,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class MongoMovieService(
     private val repository: MovieMongoRepository,
     private val executionTimer: ExecutionTimer,
+    private val mongoMemorySizeProvider: MongoMemorySizeProvider,
 ) : MovieService {
     override fun getAll(
         sort: GetMoviesSorting?,
@@ -52,6 +54,7 @@ class MongoMovieService(
 
         val statistics = Statistics(
             accessTime = elapsedTimeResult.time,
+            databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
         )
 
         return ResponseWithStatistics(
@@ -122,6 +125,7 @@ class MongoMovieService(
             data = movie,
             statistics = Statistics(
                 accessTime = elapsedTimeResult.time,
+                databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
             )
         )
     }
@@ -158,11 +162,13 @@ class MongoMovieService(
                 .toMovie()
         }
 
+        val movie = elapsedTimeResult.blockResult
 
         return ResponseWithStatistics(
-            data = elapsedTimeResult.blockResult,
+            data = movie,
             statistics = Statistics(
-                accessTime = elapsedTimeResult.time
+                accessTime = elapsedTimeResult.time,
+                databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
             ),
         )
     }
@@ -204,12 +210,12 @@ class MongoMovieService(
     override fun delete(movieId: String): ResponseWithStatistics<Unit> {
         val elapsedTimeResult = executionTimer.measure {
             repository.deleteById(movieId)
-
         }
 
         return ResponseWithStatistics(
             statistics = Statistics(
                 accessTime = elapsedTimeResult.time,
+                databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
             )
         )
     }
