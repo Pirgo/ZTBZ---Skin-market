@@ -185,6 +185,10 @@ class MongoMovieService(
         )
 
     override fun delete(movieId: String): ResponseWithStatistics<Unit> {
-        TODO("Not yet implemented")
+        repository.deleteById(movieId)
+
+        return ResponseWithStatistics(
+            statistics = Statistics()
+        )
     }
 }
