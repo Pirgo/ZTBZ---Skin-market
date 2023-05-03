@@ -33,10 +33,13 @@ class MongoMovieService(
         val sortField = getSortFieldName(sort)
         val pageRequest = createPageRequest(offset ?: 0, pageSize ?: 10, sortOrder, sortField)
 
-        val moviesPage = when (year) {
-            null -> repository.findAllByFilters(titleToSearch.orEmpty(), platformName.orEmpty(), pageRequest)
-            else -> repository.findAllByFilters(titleToSearch.orEmpty(), platformName.orEmpty(), year, pageRequest)
+        val elapsedTimeResult = executionTimer.measure {
+            when (year) {
+                null -> repository.findAllByFilters(titleToSearch.orEmpty(), platformName.orEmpty(), pageRequest)
+                else -> repository.findAllByFilters(titleToSearch.orEmpty(), platformName.orEmpty(), year, pageRequest)
+            }
         }
+        val moviesPage = elapsedTimeResult.blockResult
 
         val movieSummaries = moviesPage.content.map { it.toMovieSummary() }
         val nextOffset = calculateNextOffset(moviesPage, offset, pageSize)
@@ -47,7 +50,9 @@ class MongoMovieService(
             totalRecords = moviesPage.totalElements.toInt()
         )
 
-        val statistics = Statistics()       // TODO: Calculate statistics
+        val statistics = Statistics(
+            accessTime = elapsedTimeResult.time,
+        )
 
         return ResponseWithStatistics(
             data = response,
@@ -105,14 +110,19 @@ class MongoMovieService(
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun get(movieId: String): ResponseWithStatistics<Movie> {
-        val movie = repository
-            .findById(movieId)
-            .getOrNull()
-            ?.toMovie()
+        val elapsedTimeResult = executionTimer.measure {
+            repository
+                .findById(movieId)
+                .getOrNull()
+                ?.toMovie()
+        }
+        val movie = elapsedTimeResult.blockResult
 
         return ResponseWithStatistics(
             data = movie,
-            statistics = Statistics()
+            statistics = Statistics(
+                accessTime = elapsedTimeResult.time,
+            )
         )
     }
 
@@ -133,22 +143,27 @@ class MongoMovieService(
         )
 
     override fun add(request: AddMovieRequest): ResponseWithStatistics<Movie> {
-        val platforms = getAllPlatforms(request)
-        val genres = getAllGenres(request)
+        val elapsedTimeResult = executionTimer.measure {
+            val platforms = getAllPlatforms(request)
+            val genres = getAllGenres(request)
 
-        val movie = request
-            .toMovieMongoModel(
-                platforms = platforms,
-                genres = genres,
-                movieActors = emptyList(),      // TODO: Implement when PeopleRepository will be implemented
-                movieDirectors = emptyList(),       // TODO: Implement when PeopleRepository will be implemented
-            )
-            .let(repository::save)
-            .toMovie()
+            return@measure request
+                .toMovieMongoModel(
+                    platforms = platforms,
+                    genres = genres,
+                    movieActors = emptyList(),      // TODO: Implement when PeopleRepository will be implemented
+                    movieDirectors = emptyList(),       // TODO: Implement when PeopleRepository will be implemented
+                )
+                .let(repository::save)
+                .toMovie()
+        }
+
 
         return ResponseWithStatistics(
-            data = movie,
-            statistics = Statistics(),
+            data = elapsedTimeResult.blockResult,
+            statistics = Statistics(
+                accessTime = elapsedTimeResult.time
+            ),
         )
     }
 
@@ -187,10 +202,15 @@ class MongoMovieService(
         )
 
     override fun delete(movieId: String): ResponseWithStatistics<Unit> {
-        repository.deleteById(movieId)
+        val elapsedTimeResult = executionTimer.measure {
+            repository.deleteById(movieId)
+
+        }
 
         return ResponseWithStatistics(
-            statistics = Statistics()
+            statistics = Statistics(
+                accessTime = elapsedTimeResult.time,
+            )
         )
     }
 }
