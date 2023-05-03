@@ -8,7 +8,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
 import com.pk.zbtz.zbtzbackend.domain.*
-import com.pk.zbtz.zbtzbackend.utils.ExecutionTimer
+import com.pk.zbtz.zbtzbackend.utils.execution_timer.ExecutionTimer
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
