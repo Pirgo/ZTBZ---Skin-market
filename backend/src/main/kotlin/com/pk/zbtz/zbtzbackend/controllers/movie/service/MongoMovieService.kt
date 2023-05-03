@@ -8,6 +8,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
 import com.pk.zbtz.zbtzbackend.domain.*
+import com.pk.zbtz.zbtzbackend.utils.ExecutionTimer
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -17,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class MongoMovieService(
     private val repository: MovieMongoRepository,
+    private val executionTimer: ExecutionTimer,
 ) : MovieService {
     override fun getAll(
         sort: GetMoviesSorting?,
