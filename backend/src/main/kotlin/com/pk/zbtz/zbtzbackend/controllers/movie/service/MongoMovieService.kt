@@ -114,7 +114,7 @@ class MongoMovieService(
         )
     }
 
-    fun MovieMongoModel.toMovie(): Movie =
+    private fun MovieMongoModel.toMovie(): Movie =
         Movie(
             id = this.id.orEmpty(),
             title = this.title,
@@ -131,8 +131,58 @@ class MongoMovieService(
         )
 
     override fun add(request: AddMovieRequest): ResponseWithStatistics<Movie> {
-        TODO("Not yet implemented")
+        val platforms = getAllPlatforms(request)
+        val genres = getAllGenres(request)
+
+        val movie = request
+            .toMovieMongoModel(
+                platforms = platforms,
+                genres = genres,
+                movieActors = emptyList(),      // TODO: Implement when PeopleRepository will be implemented
+                movieDirectors = emptyList(),       // TODO: Implement when PeopleRepository will be implemented
+            )
+            .let(repository::save)
+            .toMovie()
+
+        return ResponseWithStatistics(
+            data = movie,
+            statistics = Statistics(),
+        )
     }
+
+    private fun getAllPlatforms(request: AddMovieRequest): List<MovieMongoModel.PlatformMovieMongo> =
+        repository
+            .findAllByPlatformIds(platformIds = request.platformIds)
+            .flatMap(MovieMongoModel::platforms)
+            .distinct()
+            .filter { request.platformIds.contains(it.id) }
+
+    private fun getAllGenres(request: AddMovieRequest): List<MovieMongoModel.GenreMovieMongo> =
+        repository
+            .findAllByGenreIds(genreId = request.genreIds)
+            .flatMap(MovieMongoModel::genres)
+            .distinct()
+            .filter { request.genreIds.contains(it.id) }
+
+    private fun AddMovieRequest.toMovieMongoModel(
+        platforms: List<MovieMongoModel.PlatformMovieMongo>,
+        genres: List<MovieMongoModel.GenreMovieMongo>,
+        movieActors: List<MovieMongoModel.HumanMovieMongo.Actor>,
+        movieDirectors: List<MovieMongoModel.HumanMovieMongo.Director>,
+    ): MovieMongoModel =
+        MovieMongoModel(
+            title = title,
+            platforms = platforms,
+            genres = genres,
+            productionYear = productionYear,
+            rating = rating ?: 0f,
+            plot = plot,
+            coverUrl = coverUrl,
+            budget = budget,
+            length = length,
+            actors = movieActors,
+            directors = movieDirectors,
+        )
 
     override fun delete(movieId: String): ResponseWithStatistics<Unit> {
         TODO("Not yet implemented")

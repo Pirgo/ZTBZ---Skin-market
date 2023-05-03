@@ -135,7 +135,7 @@ class FakeMovieService : MovieService {
         }
 
         val newMovie = Movie(
-            id = request.id,
+            id = movies.maxOf { it.id } + 1,
             title = request.title,
             platforms = platforms,
             genres = genres,

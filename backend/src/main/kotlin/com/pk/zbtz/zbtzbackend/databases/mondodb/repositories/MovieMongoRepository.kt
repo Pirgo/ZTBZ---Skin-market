@@ -23,4 +23,10 @@ interface MovieMongoRepository : MongoRepository<MovieMongoModel, String> {
         platformName: String,
         pageable: Pageable
     ): Page<MovieMongoModel>
+
+    @Query("{ 'platforms.id': { \$in: ?0 } }")
+    fun findAllByPlatformIds(platformIds: List<String>): List<MovieMongoModel>
+
+    @Query("{ 'genres.id': { \$in: ?0 } }")
+    fun findAllByGenreIds(genreId: List<String>): List<MovieMongoModel>
 }
