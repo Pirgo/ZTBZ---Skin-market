@@ -4,8 +4,10 @@ import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.AddHumanRequest
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.GetPeopleResponse
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.HumanMongoModel
+import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.providers.MongoMemorySizeProvider
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
+import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
 import com.pk.zbtz.zbtzbackend.domain.Human
 import com.pk.zbtz.zbtzbackend.domain.HumanSummary
 import com.pk.zbtz.zbtzbackend.domain.Statistics
@@ -18,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class MongoPeopleService(
     private val repository: HumanMongoRepository,
+    private val movieMongoRepository: MovieMongoRepository,
     private val executionTimer: ExecutionTimer,
     private val mongoMemorySizeProvider: MongoMemorySizeProvider,
 ) : PeopleService {
@@ -119,11 +122,101 @@ class MongoPeopleService(
         )
 
     override fun add(request: AddHumanRequest): ResponseWithStatistics<Human> {
-        TODO("Not yet implemented")
+        val elapsedTimeResult = executionTimer.measure {
+            request
+                .toHumanMongoModel()
+                .let(repository::save)
+                .also(::updateMoviesWithNewHuman)
+        }
+        val human = elapsedTimeResult.blockResult.toHuman()
+
+        return ResponseWithStatistics(
+            data = human,
+            statistics = getStatistics(elapsedTimeResult),
+        )
+    }
+
+    private fun AddHumanRequest.toHumanMongoModel(): HumanMongoModel {
+        val movieIds = this.functions.director.map { it.filmId } + this.functions.actor.map { it.filmId }
+        val movies = movieMongoRepository.findAllById(movieIds)
+
+        val directorFunctions = this.functions.director.map { director ->
+            val movie = movies.find { it.id == director.filmId }
+            HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
+                filmId = director.filmId,
+                title = movie?.title ?: ""
+            )
+        }
+
+        val actorFunctions = this.functions.actor.map { actor ->
+            val movie = movies.find { it.id == actor.filmId }
+            HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
+                filmId = actor.filmId,
+                title = movie?.title ?: ""
+            )
+        }
+
+        return HumanMongoModel(
+            firstName = this.firstName,
+            secondName = this.secondName,
+            photoUrl = this.photoUrl,
+            birthday = this.birthday,
+            placeOfBirth = this.placeOfBirth,
+            deathDay = this.deathDay,
+            description = this.description,
+            functions = HumanMongoModel.FunctionsValueMongo(
+                director = directorFunctions,
+                actor = actorFunctions
+            )
+        )
+    }
+
+    private fun updateMoviesWithNewHuman(human: HumanMongoModel) {
+        val directorMovies = human.functions.director.map { it.filmId }
+        val actorMovies = human.functions.actor.map { it.filmId }
+        val movieIds = directorMovies + actorMovies
+
+        movieMongoRepository
+            .findAllById(movieIds)
+            .forEach { movie ->
+                val updatedDirectors = when (directorMovies.contains(movie.id)) {
+                    true -> movie.directors + MovieMongoModel.HumanMovieMongo.Director(
+                        id = human.id,
+                        name = "${human.firstName} ${human.secondName}",
+                        photoUrl = human.photoUrl.orEmpty()
+                    )
+
+                    false -> movie.directors
+                }
+
+                val updatedActors = when (actorMovies.contains(movie.id)) {
+                    true -> movie.actors + MovieMongoModel.HumanMovieMongo.Actor(
+                        id = human.id,
+                        name = "${human.firstName} ${human.secondName}",
+                        photoUrl = human.photoUrl.orEmpty(),
+                        character = ""      // TODO: Should it be like this?
+                    )
+
+                    false -> movie.actors
+                }
+
+                movie
+                    .copy(
+                        actors = updatedActors,
+                        directors = updatedDirectors,
+                    )
+                    .let(movieMongoRepository::save)
+            }
     }
 
     override fun delete(humanId: String): ResponseWithStatistics<Unit> {
-        TODO("Not yet implemented")
+        val elapsedTimeResult = executionTimer.measure {
+            repository.deleteById(humanId)
+        }
+
+        return ResponseWithStatistics(
+            statistics = getStatistics(elapsedTimeResult)
+        )
     }
 
     private fun <T> getStatistics(
