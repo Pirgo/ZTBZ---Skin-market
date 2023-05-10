@@ -52,10 +52,7 @@ class MongoMovieService(
             totalRecords = moviesPage.totalElements.toInt()
         )
 
-        val statistics = Statistics(
-            accessTime = elapsedTimeResult.time,
-            databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
-        )
+        val statistics = getStatistics(elapsedTimeResult)
 
         return ResponseWithStatistics(
             data = response,
@@ -123,10 +120,7 @@ class MongoMovieService(
 
         return ResponseWithStatistics(
             data = movie,
-            statistics = Statistics(
-                accessTime = elapsedTimeResult.time,
-                databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
-            )
+            statistics = getStatistics(elapsedTimeResult),
         )
     }
 
@@ -166,10 +160,7 @@ class MongoMovieService(
 
         return ResponseWithStatistics(
             data = movie,
-            statistics = Statistics(
-                accessTime = elapsedTimeResult.time,
-                databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
-            ),
+            statistics = getStatistics(elapsedTimeResult),
         )
     }
 
@@ -213,10 +204,15 @@ class MongoMovieService(
         }
 
         return ResponseWithStatistics(
-            statistics = Statistics(
-                accessTime = elapsedTimeResult.time,
-                databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
-            )
+            statistics = getStatistics(elapsedTimeResult)
         )
     }
+
+    private fun <T> getStatistics(
+        elapsedTimeResult: ExecutionTimer.ElapsedTimeResult<T>
+    ): Statistics =
+        Statistics(
+            accessTime = elapsedTimeResult.time,
+            databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
+        )
 }
