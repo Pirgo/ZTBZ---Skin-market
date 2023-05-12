@@ -11,6 +11,13 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import kotlin.math.abs
 
+
+/**
+Class generates and populates MongoDB with dummy data
+for Movie and Human entities upon application startup. It is useful for development
+and testing purposes when a pre-populated database is required for demos or
+validating application functionality.
+ */
 @Service
 class DummyMongoDataService(
     private val movieRepository: MovieMongoRepository,

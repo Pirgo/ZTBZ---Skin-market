@@ -7,6 +7,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.providers.MongoMemorySizeProvider
+import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
 import com.pk.zbtz.zbtzbackend.domain.*
 import com.pk.zbtz.zbtzbackend.utils.execution_timer.ExecutionTimer
@@ -19,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class MongoMovieService(
     private val repository: MovieMongoRepository,
+    private val humanMongoRepository: HumanMongoRepository,
     private val executionTimer: ExecutionTimer,
     private val mongoMemorySizeProvider: MongoMemorySizeProvider,
 ) : MovieService {
@@ -142,15 +144,12 @@ class MongoMovieService(
 
     override fun add(request: AddMovieRequest): ResponseWithStatistics<Movie> {
         val elapsedTimeResult = executionTimer.measure {
-            val platforms = getAllPlatforms(request)
-            val genres = getAllGenres(request)
-
-            return@measure request
+            request
                 .toMovieMongoModel(
-                    platforms = platforms,
-                    genres = genres,
-                    movieActors = emptyList(),      // TODO: Implement when PeopleRepository will be implemented
-                    movieDirectors = emptyList(),       // TODO: Implement when PeopleRepository will be implemented
+                    platforms = getAllPlatforms(request),
+                    genres = getAllGenres(request),
+                    movieActors = getActorsFromRequest(request),
+                    movieDirectors = getDirectorsFromRequest(request),
                 )
                 .let(repository::save)
                 .toMovie()
@@ -177,6 +176,41 @@ class MongoMovieService(
             .flatMap(MovieMongoModel::genres)
             .distinct()
             .filter { request.genreIds.contains(it.id) }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun getActorsFromRequest(request: AddMovieRequest): List<MovieMongoModel.HumanMovieMongo.Actor> =
+        request
+            .actors
+            .mapNotNull { actorRequest ->
+                humanMongoRepository
+                    .findById(actorRequest.id)
+                    .getOrNull()
+                    ?.let {
+                        MovieMongoModel.HumanMovieMongo.Actor(
+                            id = it.id,
+                            name = "${it.firstName} ${it.secondName}",
+                            photoUrl = it.photoUrl.orEmpty(),
+                            character = actorRequest.character
+                        )
+                    }
+            }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun getDirectorsFromRequest(request: AddMovieRequest): List<MovieMongoModel.HumanMovieMongo.Director> =
+        request
+            .directors
+            .mapNotNull { directorRequest ->
+                humanMongoRepository
+                    .findById(directorRequest.id)
+                    .getOrNull()
+                    ?.let {
+                        MovieMongoModel.HumanMovieMongo.Director(
+                            id = it.id,
+                            name = "${it.firstName} ${it.secondName}",
+                            photoUrl = it.photoUrl.orEmpty()
+                        )
+                    }
+            }
 
     private fun AddMovieRequest.toMovieMongoModel(
         platforms: List<MovieMongoModel.PlatformMovieMongo>,
