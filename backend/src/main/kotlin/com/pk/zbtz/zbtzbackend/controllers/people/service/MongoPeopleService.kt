@@ -29,7 +29,7 @@ class MongoPeopleService(
         pageSize: Int?,
         offset: Int?
     ): ResponseWithStatistics<GetPeopleResponse> {
-        val pageRequest = PageRequest.of(offset ?: 0, pageSize ?: 10)
+        val pageRequest = PageRequest.of(offset ?: DEFAULT_OFFSET, pageSize ?: DEFAULT_PAGE_SIZE)
 
         val elapsedTimeResult = executionTimer.measure {
             repository.findByFirstNameOrSecondName(
@@ -226,4 +226,9 @@ class MongoPeopleService(
             accessTime = elapsedTimeResult.time,
             databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
         )
+
+    private companion object {
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_PAGE_SIZE = 10
+    }
 }

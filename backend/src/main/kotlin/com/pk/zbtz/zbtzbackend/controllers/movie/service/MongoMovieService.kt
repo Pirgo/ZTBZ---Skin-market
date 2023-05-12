@@ -33,9 +33,12 @@ class MongoMovieService(
         pageSize: Int?,
         offset: Int?
     ): ResponseWithStatistics<GetMoviesResponse> {
-        val sortOrder = getSortingDirection(sortingOrder)
-        val sortField = getSortFieldName(sort)
-        val pageRequest = createPageRequest(offset ?: 0, pageSize ?: 10, sortOrder, sortField)
+        val pageRequest = createPageRequest(
+            offset = offset ?: DEFAULT_OFFSET,
+            pageSize = pageSize ?: DEFAULT_PAGE_SIZE,
+            sortOrder = getSortingDirection(sortingOrder),
+            sortField = getSortFieldName(sort),
+        )
 
         val elapsedTimeResult = executionTimer.measure {
             when (year) {
@@ -249,4 +252,9 @@ class MongoMovieService(
             accessTime = elapsedTimeResult.time,
             databaseMemorySize = mongoMemorySizeProvider.getDatabaseSizeInGigabytes(),
         )
+
+    private companion object {
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_PAGE_SIZE = 10
+    }
 }
