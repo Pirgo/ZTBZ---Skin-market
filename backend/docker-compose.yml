@@ -7,6 +7,8 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://ztbzBackend:example@mongo:27017/ztbzDatabase
 
   mongo:
     image: mongo:latest

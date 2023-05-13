@@ -11,10 +11,10 @@ COPY build.gradle.kts settings.gradle.kts ./
 COPY src src
 
 # Run the Gradle build
-RUN gradle build --no-daemon
+RUN gradle build --no-daemon -x test
 
 # Use the official OpenJDK image as the base image for the runtime
-FROM openjdk:17-jre-slim
+FROM openjdk:17
 
 # Set the working directory
 WORKDIR /app
