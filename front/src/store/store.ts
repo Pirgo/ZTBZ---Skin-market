@@ -5,6 +5,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import thunk from 'redux-thunk';
 import { moviesApi } from "./api/movies";
 import {peopleApi} from "./api/people";
+import searchFiltersReducer from "./slice/searchFilters";
 
 const persistConfig = {
     key: 'root',
@@ -13,6 +14,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     settings: persistReducer(persistConfig, settingsReducer),
+    searchFilters: searchFiltersReducer,
     [moviesApi.reducerPath]: moviesApi.reducer,
     [peopleApi.reducerPath]: peopleApi.reducer
 })
