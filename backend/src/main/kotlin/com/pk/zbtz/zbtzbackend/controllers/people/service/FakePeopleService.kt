@@ -208,7 +208,7 @@ class FakePeopleService : PeopleService {
 
         val dummyStatistics = Statistics(
             accessTime = 1000,
-            databaseMemorySize = 2137,
+            databaseMemorySize = 2137.0,
         )
     }
 }

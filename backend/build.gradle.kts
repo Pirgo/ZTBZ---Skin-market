@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.0.4"
+    id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.spring") version "1.7.22"
@@ -20,6 +20,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.0.6")
+    implementation("io.github.serpro69:kotlin-faker:1.14.0") // Used to generate fake data
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -32,4 +36,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.jar {
+    enabled = false
 }

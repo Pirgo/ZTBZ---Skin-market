@@ -7,7 +7,7 @@ const Movie = () => {
     const selectedDatabase = useSelector((state: RootState) => state.settings.dataBase)
     const { id } = useParams()
     //TODO possible error, but should not happen
-    const {data, error, isLoading} = useGetMovieQuery({movieDatabase: selectedDatabase, id: parseInt(id || "")})
+    const {data, error, isLoading} = useGetMovieQuery({movieDatabase: selectedDatabase, id: id || ""})
     return (
         <>
             <p>{data?.data.title} </p>
