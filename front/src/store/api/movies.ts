@@ -6,7 +6,12 @@ export const moviesApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080/' }),
     endpoints: (builder) => ({
         getMovies: builder.query<MoviesResponse, MoviesRequest>({
-            query: (request) => `${request.movieDatabase}/movies`,
+            query: ({searchText, year, platform, offset, movieDatabase, pageSize}) => {
+                return {
+                    url: `${movieDatabase}/movies`,
+                    params: {searchText, year, platform, offset, pageSize}
+                }
+            }
         }),
         getMovie: builder.query<MovieDetailsResponse, MovieDetailsRequest>({
             query: (request) => `${request.movieDatabase}/movies/${request.id}`,
@@ -55,6 +60,11 @@ export interface Statistics {
 
 export interface MoviesRequest {
     movieDatabase: DataBase
+    searchText?: string
+    platform?: string
+    year?: number
+    offset: number
+    pageSize: number
 }
 
 export interface MovieDetails {

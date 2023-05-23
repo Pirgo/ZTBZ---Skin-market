@@ -7,7 +7,12 @@ export const peopleApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080/' }),
     endpoints: (builder) => ({
         getPeople: builder.query<PeopleResponse, PeopleRequest>({
-            query: (request) => `${request.movieDatabase}/people`,
+            query: ({searchText, offset, movieDatabase, pageSize}) => {
+                return {
+                    url: `${movieDatabase}/people`,
+                    params: {searchText, offset, pageSize}
+                }
+            }
         }),
         getPerson: builder.query<HumanDetailsResponse, HumanDetailsRequest>({
             query: (request) => `${request.movieDatabase}/people/${request.id}`,
@@ -64,6 +69,9 @@ export interface HumanDetailsResponse {
 
 export interface PeopleRequest {
     movieDatabase: DataBase
+    searchText?: string
+    offset: number
+    pageSize: number
 }
 
 export interface HumanDetailsRequest {
