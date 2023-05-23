@@ -10,19 +10,15 @@ data class AddMovieRequest(
     val coverUrl: String,
     val budget: Float,
     val length: Float,
-    val actors: List<AddMovieHuman.Actor>,
-    val directors: List<AddMovieHuman.Director>,
+    val actors: List<AddMovieActor>,
+    val directors: List<AddMovieDirector>,
 ) {
-    sealed interface AddMovieHuman {
-        val id: String
+    data class AddMovieActor(
+        val id: String,
+        val character: String,
+    )
 
-        data class Actor(
-            override val id: String,
-            val character: String,
-        ): AddMovieHuman
-
-        data class Director(
-            override val id: String,
-        ): AddMovieHuman
-    }
+    data class AddMovieDirector(
+        val id: String,
+    )
 }

@@ -79,18 +79,8 @@ class FakePeopleService : PeopleService {
             deathDay = request.deathDay,
             description = request.description,
             functions = Human.FunctionsValue(
-                director = request.functions.director.map { function ->
-                    Human.FunctionsValue.Function.Director(
-                        filmId = function.filmId,
-                        title = "Movie ${function.filmId}"
-                    )
-                },
-                actor = request.functions.actor.map { function ->
-                    Human.FunctionsValue.Function.Actor(
-                        filmId = function.filmId,
-                        title = "Movie ${function.filmId}",
-                    )
-                }
+                director = emptyList(),
+                actor = emptyList(),
             )
         )
 
