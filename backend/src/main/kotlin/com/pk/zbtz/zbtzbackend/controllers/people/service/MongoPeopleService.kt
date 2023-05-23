@@ -41,7 +41,7 @@ class MongoPeopleService(
         val peoplePage = elapsedTimeResult.blockResult
 
         val peopleSummary = peoplePage.content.map { it.toHumanSummary() }
-        val nextOffset = calculateNextOffset(peoplePage, offset, pageSize)
+        val nextOffset = calculateNextOffset(peoplePage, offset)
         val response = GetPeopleResponse(
             people = peopleSummary,
             nextOffset = nextOffset,
@@ -68,8 +68,7 @@ class MongoPeopleService(
     private fun calculateNextOffset(
         moviesPage: Page<HumanMongoModel>,
         offset: Int?,
-        pageSize: Int?
-    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
+    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + 1 else null
 
 
     @OptIn(ExperimentalStdlibApi::class)

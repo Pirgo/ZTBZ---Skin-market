@@ -49,7 +49,7 @@ class MongoMovieService(
         val moviesPage = elapsedTimeResult.blockResult
 
         val movieSummaries = moviesPage.content.map { it.toMovieSummary() }
-        val nextOffset = calculateNextOffset(moviesPage, offset, pageSize)
+        val nextOffset = calculateNextOffset(moviesPage, offset)
         val response = GetMoviesResponse(
             movies = movieSummaries,
             nextOffset = nextOffset,
@@ -110,8 +110,7 @@ class MongoMovieService(
     private fun calculateNextOffset(
         moviesPage: Page<MovieMongoModel>,
         offset: Int?,
-        pageSize: Int?
-    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
+    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + 1 else null
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun get(movieId: String): ResponseWithStatistics<Movie> {
