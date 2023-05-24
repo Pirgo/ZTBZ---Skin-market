@@ -26,27 +26,67 @@ class DummyMongoDataService(
     @EventListener(ApplicationReadyEvent::class)
     fun generateDummyData() {
         val faker = Faker()
-        val numberOfMovies = 10
-        val numberOfHumans = 20
+        val numberOfMovies = 10000
+        val numberOfHumans = 50000
+
+        val people = (1..numberOfHumans)
+            .map { generateFakeHuman(faker) }
+            .map(humanMongoRepository::save)
+            .toMutableList()
 
         repeat(numberOfMovies) {
-            generateFakeMovie(faker).let(movieRepository::save)
-        }
+            people.clear()
+            people.addAll(humanMongoRepository.findAll().toList())
 
-        repeat(numberOfHumans) {
-            generateFakeHuman(faker).let(humanMongoRepository::save)
+            val movie = generateFakeMovie(faker).let(movieRepository::save)
+
+            val actors = people.shuffled().take(faker.random.nextInt(1, 20)).map { person ->
+                person.copy(
+                    functions = person.functions.copy(
+                        actor = person.functions.actor + HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
+                            filmId = movie.id.orEmpty(),
+                            title = movie.title
+                        )
+                    )
+                ).let(humanMongoRepository::save)
+
+                MovieMongoModel.HumanMovieMongo.Actor(
+                    id = person.id,
+                    name = "${person.firstName} ${person.secondName}",
+                    photoUrl = person.photoUrl.orEmpty(),
+                    character = faker.superhero.name()
+                )
+            }
+
+            people.clear()
+            people.addAll(humanMongoRepository.findAll().toList())
+
+            val directors = people.shuffled().take(faker.random.nextInt(1, 20)).map { person ->
+                person.copy(
+                    functions = person.functions.copy(
+                        director = person.functions.director + HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
+                            filmId = movie.id.orEmpty(),
+                            title = movie.title
+                        )
+                    )
+                ).let(humanMongoRepository::save)
+
+                MovieMongoModel.HumanMovieMongo.Director(
+                    id = person.id,
+                    name = "${person.firstName} ${person.secondName}",
+                    photoUrl = person.photoUrl.orEmpty()
+                )
+            }
+
+            movie.copy(
+                actors = actors,
+                directors = directors,
+            ).let(movieRepository::save)
         }
     }
 
-    private fun generateFakeMovie(faker: Faker): MovieMongoModel {
-        val platforms = (1..3).map {
-            MovieMongoModel.PlatformMovieMongo(
-                id = faker.randomId(),
-                name = faker.app.name(),
-                logoUrl = faker.randomUrl()
-            )
-        }
 
+    private fun generateFakeMovie(faker: Faker): MovieMongoModel {
         val genres = (1..3).map {
             MovieMongoModel.GenreMovieMongo(
                 id = faker.randomId(),
@@ -72,9 +112,8 @@ class DummyMongoDataService(
         }
 
         return MovieMongoModel(
-            id = null,
             title = faker.movie.title(),
-            platforms = platforms,
+            platforms = PLATFORMS.getRandomElements(faker.random.nextInt(3)),
             genres = genres,
             productionYear = faker.random.nextInt(1970, 2023),
             rating = faker.random.nextFloat() * 2,
@@ -88,27 +127,7 @@ class DummyMongoDataService(
     }
 
     private fun generateFakeHuman(faker: Faker): HumanMongoModel {
-        val directorFunctions = (1..3).map {
-            HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
-                filmId = faker.randomId(),
-                title = faker.movie.title()
-            )
-        }
-
-        val actorFunctions = (1..3).map {
-            HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
-                filmId = faker.randomId(),
-                title = faker.movie.title()
-            )
-        }
-
-        val functionsValue = HumanMongoModel.FunctionsValueMongo(
-            director = directorFunctions,
-            actor = actorFunctions
-        )
-
         return HumanMongoModel(
-            id = null,
             firstName = faker.name.firstName(),
             secondName = faker.name.lastName(),
             photoUrl = faker.randomUrl(),
@@ -116,7 +135,10 @@ class DummyMongoDataService(
             placeOfBirth = faker.address.city(),
             deathDay = faker.birthDate().takeIf { faker.random.nextBoolean() },
             description = faker.lorem.words(),
-            functions = functionsValue
+            functions = HumanMongoModel.FunctionsValueMongo(
+                director = emptyList(),
+                actor = emptyList()
+            )
         )
     }
 
@@ -128,4 +150,30 @@ class DummyMongoDataService(
 
     private fun Faker.birthDate(): LocalDate =
         this.person.birthDate(age = this.random.nextLong(100))
+
+    private fun <T> List<T>.getRandomElements(n: Int): List<T> =
+        when {
+            this.isEmpty() || n >= size -> this
+            else -> (indices).shuffled().take(n).map { this[it] }
+        }
+
+    private companion object {
+        val PLATFORMS = listOf(
+            MovieMongoModel.PlatformMovieMongo(
+                id = "1",
+                name = "Netflix",
+                logoUrl = "https://historia.org.pl/wp-content/uploads/2018/04/netflix-logo.jpg"
+            ),
+            MovieMongoModel.PlatformMovieMongo(
+                id = "2",
+                name = "Hulu",
+                logoUrl = "https://i0.wp.com/cordcuttersnews.com/wp-content/uploads/2019/09/Hulu-New-Logo-Rec.png?w=1011&ssl=1"
+            ),
+            MovieMongoModel.PlatformMovieMongo(
+                id = "3",
+                name = "Amazon Prime",
+                logoUrl = "https://m.media-amazon.com/images/G/01/primevideo/seo/primevideo-seo-logo.png"
+            ),
+        )
+    }
 }
