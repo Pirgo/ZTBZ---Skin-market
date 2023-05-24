@@ -5,6 +5,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.AddMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesResponse
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSorting
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
+import com.pk.zbtz.zbtzbackend.databases.mondodb.models.HumanMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.providers.MongoMemorySizeProvider
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
@@ -49,7 +50,7 @@ class MongoMovieService(
         val moviesPage = elapsedTimeResult.blockResult
 
         val movieSummaries = moviesPage.content.map { it.toMovieSummary() }
-        val nextOffset = calculateNextOffset(moviesPage, offset, pageSize)
+        val nextOffset = calculateNextOffset(moviesPage, offset)
         val response = GetMoviesResponse(
             movies = movieSummaries,
             nextOffset = nextOffset,
@@ -110,8 +111,7 @@ class MongoMovieService(
     private fun calculateNextOffset(
         moviesPage: Page<MovieMongoModel>,
         offset: Int?,
-        pageSize: Int?
-    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + (pageSize ?: 10) else null
+    ): Int? = if (moviesPage.hasNext()) (offset ?: 0) + 1 else null
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun get(movieId: String): ResponseWithStatistics<Movie> {
@@ -156,6 +156,7 @@ class MongoMovieService(
                 )
                 .let(repository::save)
                 .toMovie()
+                .also(::updatePeopleWithNewMovieRoles)
         }
 
         val movie = elapsedTimeResult.blockResult
@@ -234,6 +235,53 @@ class MongoMovieService(
             actors = movieActors,
             directors = movieDirectors,
         )
+
+    private fun updatePeopleWithNewMovieRoles(movie: Movie) {
+        updatePeopleWithActorRole(movie)
+        updatePeopleWithPeopleRole(movie)
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun updatePeopleWithActorRole(movie: Movie) {
+        movie
+            .actors
+            .mapNotNull { actor ->
+                humanMongoRepository
+                    .findById(actor.id)
+                    .getOrNull()
+                    ?.let {
+                        it.copy(
+                            functions = it.functions.copy(
+                                actor = it.functions.actor + HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
+                                    filmId = movie.id,
+                                    title = movie.title,
+                                )
+                            )
+                        ).let(humanMongoRepository::save)
+                    }
+            }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun updatePeopleWithPeopleRole(movie: Movie) {
+        movie
+            .directors
+            .mapNotNull { director ->
+                humanMongoRepository
+                    .findById(director.id)
+                    .getOrNull()
+                    ?.let {
+                        it.copy(
+                            functions = it.functions.copy(
+                                director = it.functions.director + HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
+                                    filmId = movie.id,
+                                    title = movie.title,
+                                )
+                            )
+                        ).let(humanMongoRepository::save)
+                    }
+            }
+    }
 
     override fun delete(movieId: String): ResponseWithStatistics<Unit> {
         val elapsedTimeResult = executionTimer.measure {

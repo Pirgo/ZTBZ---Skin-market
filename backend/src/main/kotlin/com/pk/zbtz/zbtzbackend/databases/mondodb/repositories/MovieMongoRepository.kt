@@ -29,4 +29,7 @@ interface MovieMongoRepository : MongoRepository<MovieMongoModel, String> {
 
     @Query("{ 'genres.id': { \$in: ?0 } }")
     fun findAllByGenreIds(genreId: List<String>): List<MovieMongoModel>
+
+    @Query("{ \$or: [ { 'actors.id': ?0 }, { 'directors.id': ?0 } ] }")
+    fun findAllBy(humanId: String): List<MovieMongoModel>
 }

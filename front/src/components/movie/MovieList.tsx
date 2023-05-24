@@ -88,7 +88,7 @@ const MovieList = () => {
     )
 
     const handlePageClick = (e: any) => {
-        const newOffset = e.selected * MOVIES_PER_PAGE
+        const newOffset = e.selected + 1
         setOffset(newOffset)
     }
 
@@ -118,7 +118,7 @@ const MovieList = () => {
                 nextLabel="next >"
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={5}
-                pageCount={data?.data.totalPages ? data?.data.totalPages : 0}
+                pageCount={(data?.data.totalPages ?? 1) - 1}
                 previousLabel="< previous"
                 renderOnZeroPageCount={null}
                 activeClassName="active"
