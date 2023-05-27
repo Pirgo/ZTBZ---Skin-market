@@ -4,6 +4,7 @@ import com.pk.zbtz.zbtzbackend.databases.mondodb.models.HumanMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
+import com.pk.zbtz.zbtzbackend.fakes.generators.MovieCoversUrlGenerator
 import io.github.serpro69.kfaker.Faker
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -22,6 +23,7 @@ validating application functionality.
 class DummyMongoDataService(
     private val movieRepository: MovieMongoRepository,
     private val humanMongoRepository: HumanMongoRepository,
+    private val movieCoversUrlGenerator: MovieCoversUrlGenerator,
 ) {
     @EventListener(ApplicationReadyEvent::class)
     fun generateDummyData() {
@@ -119,35 +121,18 @@ class DummyMongoDataService(
             )
         }
 
-        val actors = (1..5).map {
-            MovieMongoModel.HumanMovieMongo.Actor(
-                id = faker.randomId(),
-                name = faker.name.name(),
-                photoUrl = faker.randomUrl(),
-                character = faker.superhero.name()
-            )
-        }
-
-        val directors = (1..2).map {
-            MovieMongoModel.HumanMovieMongo.Director(
-                id = faker.randomId(),
-                name = faker.name.name(),
-                photoUrl = faker.randomUrl()
-            )
-        }
-
         return MovieMongoModel(
             title = faker.movie.title(),
-            platforms = PLATFORMS.getRandomElements(faker.random.nextInt(3)),
+            platforms = platforms.getRandomElements(platforms.size),
             genres = genres,
             productionYear = faker.random.nextInt(1970, 2023),
             rating = faker.random.nextFloat() * 2,
             plot = faker.lorem.words(),
-            coverUrl = faker.randomUrl(),
+            coverUrl = movieCoversUrlGenerator.generate(),
             budget = faker.random.nextFloat() * 300_000_000,
             length = faker.random.nextInt(60, 180).toFloat(),
-            actors = actors,
-            directors = directors,
+            actors = emptyList(),
+            directors = emptyList(),
         )
     }
 
@@ -183,7 +168,7 @@ class DummyMongoDataService(
         }
 
     private companion object {
-        val PLATFORMS = listOf(
+        val platforms = listOf(
             MovieMongoModel.PlatformMovieMongo(
                 id = "1",
                 name = "Netflix",
