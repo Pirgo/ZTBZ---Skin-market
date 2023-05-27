@@ -29,18 +29,21 @@ class DummyMongoDataService(
         val numberOfMovies = 10000
         val numberOfHumans = 50000
 
-        val people = (1..numberOfHumans)
+        val people: MutableList<HumanMongoModel> = (1..numberOfHumans)
             .map { generateFakeHuman(faker) }
-            .map(humanMongoRepository::save)
-            .toMutableList()
+            .let(humanMongoRepository::saveAll)
 
-        repeat(numberOfMovies) {
+        val movies: MutableList<MovieMongoModel> = (1 .. numberOfMovies)
+            .map { generateFakeMovie(faker) }
+            .let(movieRepository::saveAll)
+
+        movies.mapIndexed { index, movie ->
             people.clear()
             people.addAll(humanMongoRepository.findAll().toList())
 
-            val movie = generateFakeMovie(faker).let(movieRepository::save)
+            val randomActors = people.shuffled().take(faker.random.nextInt(1, 5))
 
-            val actors = people.shuffled().take(faker.random.nextInt(1, 20)).map { person ->
+            randomActors.map { person ->
                 person.copy(
                     functions = person.functions.copy(
                         actor = person.functions.actor + HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
@@ -48,8 +51,10 @@ class DummyMongoDataService(
                             title = movie.title
                         )
                     )
-                ).let(humanMongoRepository::save)
+                )
+            }.let(humanMongoRepository::saveAll)
 
+            val movieActors = randomActors.map { person ->
                 MovieMongoModel.HumanMovieMongo.Actor(
                     id = person.id,
                     name = "${person.firstName} ${person.secondName}",
@@ -61,7 +66,9 @@ class DummyMongoDataService(
             people.clear()
             people.addAll(humanMongoRepository.findAll().toList())
 
-            val directors = people.shuffled().take(faker.random.nextInt(1, 20)).map { person ->
+            val randomDirectors = people.shuffled().take(faker.random.nextInt(1, 5))
+
+            randomDirectors.map { person ->
                 person.copy(
                     functions = person.functions.copy(
                         director = person.functions.director + HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
@@ -69,8 +76,10 @@ class DummyMongoDataService(
                             title = movie.title
                         )
                     )
-                ).let(humanMongoRepository::save)
+                )
+            }.let(humanMongoRepository::saveAll)
 
+            val movieDirectors = randomDirectors.map { person ->
                 MovieMongoModel.HumanMovieMongo.Director(
                     id = person.id,
                     name = "${person.firstName} ${person.secondName}",
@@ -79,10 +88,10 @@ class DummyMongoDataService(
             }
 
             movie.copy(
-                actors = actors,
-                directors = directors,
-            ).let(movieRepository::save)
-        }
+                actors = movieActors,
+                directors = movieDirectors,
+            )
+        }.let(movieRepository::saveAll)
     }
 
 
