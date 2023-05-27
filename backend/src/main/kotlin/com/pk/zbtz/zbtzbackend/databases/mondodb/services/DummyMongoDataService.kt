@@ -4,6 +4,7 @@ import com.pk.zbtz.zbtzbackend.databases.mondodb.models.HumanMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
+import com.pk.zbtz.zbtzbackend.fakes.generators.HumanPhotoUrlGenerator
 import com.pk.zbtz.zbtzbackend.fakes.generators.MovieCoversUrlGenerator
 import io.github.serpro69.kfaker.Faker
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -24,6 +25,7 @@ class DummyMongoDataService(
     private val movieRepository: MovieMongoRepository,
     private val humanMongoRepository: HumanMongoRepository,
     private val movieCoversUrlGenerator: MovieCoversUrlGenerator,
+    private val humanPhotoUrlGenerator: HumanPhotoUrlGenerator,
 ) {
     @EventListener(ApplicationReadyEvent::class)
     fun generateDummyData() {
@@ -48,7 +50,8 @@ class DummyMongoDataService(
         movies.mapIndexed { movieIndex, movie ->
             println("Generating actors and directors for movie with index: $movieIndex")
 
-            val randomActorsIndexes = (1..maxNumberOfActorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans-1) }.distinct()
+            val randomActorsIndexes =
+                (1..maxNumberOfActorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans - 1) }.distinct()
 
             randomActorsIndexes.forEach { index ->
                 people[index] = people[index]
@@ -75,7 +78,8 @@ class DummyMongoDataService(
                     )
                 }
 
-            val randomDirectorsIndexes = (1..maxNumberOfDirectorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans-1) }.distinct()
+            val randomDirectorsIndexes =
+                (1..maxNumberOfDirectorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans - 1) }.distinct()
 
             randomDirectorsIndexes.forEach { index ->
                 people[index] = people[index]
@@ -123,7 +127,7 @@ class DummyMongoDataService(
 
         return MovieMongoModel(
             title = faker.movie.title(),
-            platforms = platforms.getRandomElements(platforms.size),
+            platforms = platforms.getRandomElements(faker.random.nextInt(platforms.size)),
             genres = genres,
             productionYear = faker.random.nextInt(1970, 2023),
             rating = faker.random.nextFloat() * 2,
@@ -140,7 +144,7 @@ class DummyMongoDataService(
         return HumanMongoModel(
             firstName = faker.name.firstName(),
             secondName = faker.name.lastName(),
-            photoUrl = faker.randomUrl(),
+            photoUrl = humanPhotoUrlGenerator.generate(),
             birthday = faker.birthDate(),
             placeOfBirth = faker.address.city(),
             deathDay = faker.birthDate().takeIf { faker.random.nextBoolean() },
@@ -151,9 +155,6 @@ class DummyMongoDataService(
             )
         )
     }
-
-    private fun Faker.randomUrl(): String =
-        this.string.numerify("www.example####.com")
 
     private fun Faker.randomId(): String =
         this.random.nextLong(Long.MAX_VALUE).let(::abs).toString()
