@@ -26,21 +26,27 @@ class DummyMongoDataService(
     @EventListener(ApplicationReadyEvent::class)
     fun generateDummyData() {
         val faker = Faker()
-        val numberOfMovies = 10000
-        val numberOfHumans = 50000
+        val numberOfMovies = 70000
+        val numberOfHumans = 150000
+        val maxNumberOfActorsForSingleFilm = 50
+        val maxNumberOfDirectorsForSingleFilm = 50
 
+        println("GENERATING PEOPLE")
         val people: MutableList<HumanMongoModel> = (1..numberOfHumans)
             .map { generateFakeHuman(faker) }
             .let(humanMongoRepository::saveAll)
 
+        println("GENERATING MOVIES")
         val movies: MutableList<MovieMongoModel> = (1..numberOfMovies)
             .map { generateFakeMovie(faker) }
             .let(movieRepository::saveAll)
 
+
+        println("GENERATING ACTORS AND DIRECTORS")
         movies.mapIndexed { movieIndex, movie ->
             println("Generating actors and directors for movie with index: $movieIndex")
 
-            val randomActorsIndexes = (1..5).map { faker.random.nextInt(0, numberOfHumans-1) }.distinct()
+            val randomActorsIndexes = (1..maxNumberOfActorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans-1) }.distinct()
 
             randomActorsIndexes.forEach { index ->
                 people[index] = people[index]
@@ -67,7 +73,7 @@ class DummyMongoDataService(
                     )
                 }
 
-            val randomDirectorsIndexes = (1..5).map { faker.random.nextInt(0, numberOfHumans-1) }.distinct()
+            val randomDirectorsIndexes = (1..maxNumberOfDirectorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans-1) }.distinct()
 
             randomDirectorsIndexes.forEach { index ->
                 people[index] = people[index]
@@ -100,6 +106,8 @@ class DummyMongoDataService(
         }.let(movieRepository::saveAll)
 
         people.let(humanMongoRepository::saveAll)
+
+        println("FINISHED GENERATING !!!")
     }
 
 
