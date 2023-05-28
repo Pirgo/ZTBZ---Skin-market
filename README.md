@@ -104,6 +104,6 @@ docker cp /path/to/your/people.json mongodb:/people.json
 
 Następnie korzystając z narzędzia `mongoimport` importujemy pliki do odpowiednich kolekcji
 ```bash
-docker exec -it mongodb mongoimport --db ztbzDatabase --collection movies --file /movies.json --jsonArray
-docker exec -it mongodb mongoimport --db ztbzDatabase --collection people --file /people.json --jsonArray
+docker exec -it mongodb mongoimport --db ztbzDatabase --collection movies --file /movies.json --jsonArray --authenticationDatabase ztbzDatabase --username ztbzBackend --password example
+docker exec -it mongodb mongoimport --db ztbzDatabase --collection people --file /people.json --jsonArray --authenticationDatabase ztbzDatabase --username ztbzBackend --password example
 ```
