@@ -88,3 +88,22 @@ Jeszcze jedna tabelka na platformy
 
 Statystyki ktore zwracamy w endpointach to poprostu czas ile trwalo zapytanie do bazy danych.
 Pamiec mozemy recznie porownac sprawdzajac ile pamieci zajmuja bazy danych
+
+# MongoDB
+## Generowanie danych MongoDB przy uruchomienia backendu
+Jeżeli chcesz wygenerować dane, zaraz po uruchomieniu aplikacji, to trzeba dodać argument `generateMongoData` przy uruchomieniu programu. Bez tej flagi dane nie będę generowane po uruchomieniu backendu.
+
+## Jak dodać mockowe dane z MongoDB
+Przed przystąpieniem do działania, kontener z bazą danych powinien być uruchomiony, oraz pliki `movies.json` i `people.json` powinny być pobrane.
+
+Jeżeli powyższe rzeczy mamy przygotwane, to kopiujemy pliki `*.json` do naszego kontenera
+```bash
+docker cp /path/to/your/movies.json mongodb:/movies.json
+docker cp /path/to/your/people.json mongodb:/people.json
+```
+
+Następnie korzystając z narzędzia `mongoimport` importujemy pliki do odpowiednich kolekcji
+```bash
+docker exec -it mongodb mongoimport --db ztbzDatabase --collection movies --file /movies.json --jsonArray
+docker exec -it mongodb mongoimport --db ztbzDatabase --collection people --file /people.json --jsonArray
+```

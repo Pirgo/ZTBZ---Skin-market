@@ -7,8 +7,6 @@ import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoReposito
 import com.pk.zbtz.zbtzbackend.fakes.generators.HumanPhotoUrlGenerator
 import com.pk.zbtz.zbtzbackend.fakes.generators.MovieCoversUrlGenerator
 import io.github.serpro69.kfaker.Faker
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import kotlin.math.abs
@@ -16,19 +14,24 @@ import kotlin.math.abs
 
 /**
 Class generates and populates MongoDB with dummy data
-for Movie and Human entities upon application startup. It is useful for development
-and testing purposes when a pre-populated database is required for demos or
+for Movie and Human entities upon application startup with `generateMongoData` flag.
+It is useful for development and testing purposes when a pre-populated database is required for demos or
 validating application functionality.
  */
 @Service
 class DummyMongoDataService(
     private val movieRepository: MovieMongoRepository,
-    private val humanMongoRepository: HumanMongoRepository,
+    private val humanRepository: HumanMongoRepository,
     private val movieCoversUrlGenerator: MovieCoversUrlGenerator,
     private val humanPhotoUrlGenerator: HumanPhotoUrlGenerator,
 ) {
-    @EventListener(ApplicationReadyEvent::class)
-    fun generateDummyData() {
+    fun clearAndGenerateDummyData() {
+        movieRepository.deleteAll()
+        humanRepository.deleteAll()
+        generateDummyData()
+    }
+
+    private fun generateDummyData() {
         val faker = Faker()
         val numberOfMovies = 70000
         val numberOfHumans = 150000
@@ -38,7 +41,7 @@ class DummyMongoDataService(
         println("GENERATING PEOPLE")
         val people: MutableList<HumanMongoModel> = (1..numberOfHumans)
             .map { generateFakeHuman(faker) }
-            .let(humanMongoRepository::saveAll)
+            .let(humanRepository::saveAll)
 
         println("GENERATING MOVIES")
         val movies: MutableList<MovieMongoModel> = (1..numberOfMovies)
@@ -104,7 +107,7 @@ class DummyMongoDataService(
             )
         }.let(movieRepository::saveAll)
 
-        people.let(humanMongoRepository::saveAll)
+        people.let(humanRepository::saveAll)
         println("FINISHED GENERATING !!!")
     }
 
