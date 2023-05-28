@@ -45,65 +45,58 @@ class DummyMongoDataService(
             .map { generateFakeMovie(faker) }
             .let(movieRepository::saveAll)
 
+        generateAndAddActorsAndDirectors(
+            movies = movies,
+            maxNumberOfActorsForSingleFilm = maxNumberOfActorsForSingleFilm,
+            faker = faker,
+            numberOfHumans = numberOfHumans,
+            people = people,
+            maxNumberOfDirectorsForSingleFilm = maxNumberOfDirectorsForSingleFilm
+        )
+    }
 
+    private fun generateAndAddActorsAndDirectors(
+        movies: MutableList<MovieMongoModel>,
+        maxNumberOfActorsForSingleFilm: Int,
+        faker: Faker,
+        numberOfHumans: Int,
+        people: MutableList<HumanMongoModel>,
+        maxNumberOfDirectorsForSingleFilm: Int
+    ) {
         println("GENERATING ACTORS AND DIRECTORS")
         movies.mapIndexed { movieIndex, movie ->
             println("Generating actors and directors for movie with index: $movieIndex")
 
-            val randomActorsIndexes =
-                (1..maxNumberOfActorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans - 1) }.distinct()
+            val randomActorsIndexes = generateRandomHumanIndexes(
+                maxNumberOfIndexes = maxNumberOfActorsForSingleFilm,
+                faker = faker,
+                numberOfHumans = numberOfHumans,
+            )
+            updatePeopleWithActorRole(
+                randomActorsIndexes = randomActorsIndexes,
+                people = people,
+                movie = movie,
+            )
+            val movieActors = makeMovieActors(
+                randomActorsIndexes = randomActorsIndexes,
+                people = people,
+                faker = faker,
+            )
 
-            randomActorsIndexes.forEach { index ->
-                people[index] = people[index]
-                    .let { person ->
-                        person.copy(
-                            functions = person.functions.copy(
-                                actor = person.functions.actor + HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
-                                    filmId = movie.id.orEmpty(),
-                                    title = movie.title
-                                )
-                            )
-                        )
-                    }
-            }
-
-            val movieActors = randomActorsIndexes
-                .map(people::get)
-                .map { person ->
-                    MovieMongoModel.HumanMovieMongo.Actor(
-                        id = person.id,
-                        name = "${person.firstName} ${person.secondName}",
-                        photoUrl = person.photoUrl.orEmpty(),
-                        character = faker.superhero.name()
-                    )
-                }
-
-            val randomDirectorsIndexes =
-                (1..maxNumberOfDirectorsForSingleFilm).map { faker.random.nextInt(0, numberOfHumans - 1) }.distinct()
-
-            randomDirectorsIndexes.forEach { index ->
-                people[index] = people[index]
-                    .let { person ->
-                        person.copy(
-                            functions = person.functions.copy(
-                                director = person.functions.director + HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
-                                    filmId = movie.id.orEmpty(),
-                                    title = movie.title
-                                )
-                            )
-                        )
-                    }
-            }
-
-            val movieDirectors = randomActorsIndexes
-                .map(people::get)
-                .map { person ->
-                    MovieMongoModel.HumanMovieMongo.Director(
-                        id = person.id,
-                        name = "${person.firstName} ${person.secondName}",
-                        photoUrl = person.photoUrl.orEmpty()
-                    )
-                }
+            val randomDirectorsIndexes = generateRandomHumanIndexes(
+                maxNumberOfIndexes = maxNumberOfDirectorsForSingleFilm,
+                faker = faker,
+                numberOfHumans = numberOfHumans,
+            )
+            updatePeopleWithDirectorRole(
+                randomDirectorsIndexes = randomDirectorsIndexes,
+                people = people,
+                movie = movie,
+            )
+            val movieDirectors = makeMovieDirectors(
+                randomDirectorsIndexes = randomDirectorsIndexes,
+                people = people,
+            )
 
             movie.copy(
                 actors = movieActors,
@@ -112,10 +105,8 @@ class DummyMongoDataService(
         }.let(movieRepository::saveAll)
 
         people.let(humanMongoRepository::saveAll)
-
         println("FINISHED GENERATING !!!")
     }
-
 
     private fun generateFakeMovie(faker: Faker): MovieMongoModel {
         val genres = (1..3).map {
@@ -140,8 +131,9 @@ class DummyMongoDataService(
         )
     }
 
-    private fun generateFakeHuman(faker: Faker): HumanMongoModel {
-        return HumanMongoModel(
+
+    private fun generateFakeHuman(faker: Faker): HumanMongoModel =
+        HumanMongoModel(
             firstName = faker.name.firstName(),
             secondName = faker.name.lastName(),
             photoUrl = humanPhotoUrlGenerator.generate(),
@@ -154,7 +146,80 @@ class DummyMongoDataService(
                 actor = emptyList()
             )
         )
+
+    private fun generateRandomHumanIndexes(
+        maxNumberOfIndexes: Int,
+        faker: Faker,
+        numberOfHumans: Int
+    ): List<Int> = (1..maxNumberOfIndexes).map { faker.random.nextInt(0, numberOfHumans - 1) }.distinct()
+
+    private fun updatePeopleWithActorRole(
+        randomActorsIndexes: List<Int>,
+        people: MutableList<HumanMongoModel>,
+        movie: MovieMongoModel
+    ) {
+        randomActorsIndexes.forEach { index ->
+            people[index] = people[index]
+                .let { person ->
+                    person.copy(
+                        functions = person.functions.copy(
+                            actor = person.functions.actor + HumanMongoModel.FunctionsValueMongo.FunctionMongo.ActorMongo(
+                                filmId = movie.id.orEmpty(),
+                                title = movie.title
+                            )
+                        )
+                    )
+                }
+        }
     }
+
+    private fun makeMovieActors(
+        randomActorsIndexes: List<Int>,
+        people: MutableList<HumanMongoModel>,
+        faker: Faker
+    ) = randomActorsIndexes
+        .map(people::get)
+        .map { person ->
+            MovieMongoModel.HumanMovieMongo.Actor(
+                id = person.id,
+                name = "${person.firstName} ${person.secondName}",
+                photoUrl = person.photoUrl.orEmpty(),
+                character = faker.superhero.name()
+            )
+        }
+
+    private fun updatePeopleWithDirectorRole(
+        randomDirectorsIndexes: List<Int>,
+        people: MutableList<HumanMongoModel>,
+        movie: MovieMongoModel
+    ) {
+        randomDirectorsIndexes.forEach { index ->
+            people[index] = people[index]
+                .let { person ->
+                    person.copy(
+                        functions = person.functions.copy(
+                            director = person.functions.director + HumanMongoModel.FunctionsValueMongo.FunctionMongo.DirectorMongo(
+                                filmId = movie.id.orEmpty(),
+                                title = movie.title
+                            )
+                        )
+                    )
+                }
+        }
+    }
+
+    private fun makeMovieDirectors(
+        randomDirectorsIndexes: List<Int>,
+        people: MutableList<HumanMongoModel>
+    ) = randomDirectorsIndexes
+        .map(people::get)
+        .map { person ->
+            MovieMongoModel.HumanMovieMongo.Director(
+                id = person.id,
+                name = "${person.firstName} ${person.secondName}",
+                photoUrl = person.photoUrl.orEmpty()
+            )
+        }
 
     private fun Faker.randomId(): String =
         this.random.nextLong(Long.MAX_VALUE).let(::abs).toString()
