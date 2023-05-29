@@ -7,6 +7,7 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+      - postgres
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://ztbzBackend:example@mongo:27017/ztbzDatabase
 
@@ -23,6 +24,19 @@ services:
       - mongo_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
+  postgres:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=adminRoot
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=default_database
+      - PGDATA=/data/postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
 
 volumes:
   mongo_data:
+  postgres:
+    driver: local

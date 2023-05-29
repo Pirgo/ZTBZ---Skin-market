@@ -4,7 +4,6 @@ import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.AddHumanRequest
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.GetPeopleResponse
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.HumanMongoModel
-import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.providers.MongoMemorySizeProvider
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.MovieMongoRepository
