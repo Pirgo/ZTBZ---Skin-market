@@ -20,10 +20,10 @@ class HumanPostgresModel(
     val placeOfBirth: String,
     val deathDay: LocalDate?,
     val description: String,
-    @OneToMany(mappedBy = "human", cascade = [CascadeType.ALL])
-    val playedIn: List<ActorPostgresModel>,
-    @OneToMany(mappedBy = "human", cascade = [CascadeType.ALL])
-    val directed: List<DirectorPostgresModel>,
+    @OneToMany(mappedBy = "human", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var playedIn: List<ActorPostgresModel>,
+    @OneToMany(mappedBy = "human", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var directed: List<DirectorPostgresModel>,
 ) {
     fun toHuman(): Human {
         return Human(

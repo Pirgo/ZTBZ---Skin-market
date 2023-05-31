@@ -18,10 +18,10 @@ class ActorPostgresModel(
     @ManyToOne
     @MapsId("movieId")
     @JoinColumn(name = "movieId", referencedColumnName = "id")
-    val movie: MoviePostgresModel,
+    var movie: MoviePostgresModel,
 
     @ManyToOne
     @MapsId("humanId")
     @JoinColumn(name = "humanId", referencedColumnName = "id")
-    val human: HumanPostgresModel
+    var human: HumanPostgresModel
 )

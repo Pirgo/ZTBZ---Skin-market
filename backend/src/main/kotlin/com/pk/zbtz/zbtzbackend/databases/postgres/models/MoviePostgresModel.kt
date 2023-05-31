@@ -33,10 +33,10 @@ class MoviePostgresModel(
     val coverUrl: String,
     val budget: Float,
     val length: Float,
-    @OneToMany(mappedBy = "movie", cascade = [CascadeType.PERSIST])
-    val actors: List<ActorPostgresModel>,
-    @OneToMany(mappedBy = "movie", cascade = [CascadeType.PERSIST])
-    val directors: List<DirectorPostgresModel>,
+    @OneToMany(mappedBy = "movie", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var actors: List<ActorPostgresModel>,
+    @OneToMany(mappedBy = "movie", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var directors: List<DirectorPostgresModel>,
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int?,
