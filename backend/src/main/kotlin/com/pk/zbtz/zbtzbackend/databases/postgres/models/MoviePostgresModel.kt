@@ -13,9 +13,19 @@ import jakarta.persistence.*
 @Entity
 class MoviePostgresModel(
     val title: String,
-    @OneToMany(targetEntity = PlatformPostgresModel::class, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+        name = "movie_platforms",
+        joinColumns = [JoinColumn(name = "movie_id")],
+        inverseJoinColumns = [JoinColumn(name = "platform_id")]
+    )
     val platforms: List<PlatformPostgresModel>,
-    @OneToMany(targetEntity = GenrePostgresModel::class, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+        name = "movie_genres",
+        joinColumns = [JoinColumn(name = "movie_id")],
+        inverseJoinColumns = [JoinColumn(name = "genre_id")]
+    )
     val genres: List<GenrePostgresModel>,
     val productionYear: Int,
     val rating: Float,

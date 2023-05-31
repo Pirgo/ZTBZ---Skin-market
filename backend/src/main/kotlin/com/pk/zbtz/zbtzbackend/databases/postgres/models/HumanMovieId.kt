@@ -7,7 +7,7 @@ import java.io.Serializable
 
 @NoArg
 @Embeddable
-class HumanMovieId(
+data class HumanMovieId(
     @Column(name = "humanId")
     val humanId: Int,
 
