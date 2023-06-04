@@ -24,6 +24,38 @@ class MovieService(
         return movieRepository.findById(id).orElseThrow()
     }
 
+    fun getAll(offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllWithOffset(offset)
+    }
+
+    fun getAllByYear(year: Int, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByYearWithOffset(year, offset)
+    }
+
+    fun getAllByPlatform(platform: String, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByPlatformWithOffset(platform, offset)
+    }
+
+    fun getAllByTitle(title: String, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByTitleWithOffset("%$title%", offset)
+    }
+
+    fun getAllByTitleAndPlatform(title: String, platform: String, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByTitleAndPlatformWithOffset("%$title%", platform, offset)
+    }
+
+    fun getAllByTitleAndYear(title: String, year: Int, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByTitleAndYearWithOffset("%$title%", year, offset)
+    }
+
+    fun getAllByPlatformAndYear(platform: String, year: Int, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByPlatformAndYearWithOffset(platform, year, offset)
+    }
+
+    fun getAllByPlatformAndTitleAndYear(platform: String, title: String, year: Int, offset: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByPlatformAndYearAndTitleWithOffset(platform, year, "%$title%", offset)
+    }
+
     fun save(request: AddMovieRequest): MoviePostgresModel {
         val id = UUID.randomUUID()
         val platforms = platformsPostgresRepository.findAllById(request.platformIds.map { it.toInt() })

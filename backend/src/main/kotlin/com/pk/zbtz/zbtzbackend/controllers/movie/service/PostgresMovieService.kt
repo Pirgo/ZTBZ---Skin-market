@@ -6,11 +6,13 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSorting
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.controllers.movie.service.MovieService
+import com.pk.zbtz.zbtzbackend.databases.postgres.models.MoviePostgresModel
 import com.pk.zbtz.zbtzbackend.domain.Movie
+import com.pk.zbtz.zbtzbackend.domain.MovieSummary
 import com.pk.zbtz.zbtzbackend.domain.Statistics
 import com.pk.zbtz.zbtzbackend.utils.execution_timer.ExecutionTimer
 import org.springframework.stereotype.Service
-import kotlin.jvm.optionals.getOrNull
+import kotlin.math.ceil
 
 @Service
 class PostgresMovieService(
@@ -26,7 +28,48 @@ class PostgresMovieService(
         pageSize: Int?,
         offset: Int?,
     ): ResponseWithStatistics<GetMoviesResponse> {
-        TODO("Not yet implemented")
+        val offset = offset ?: DEFAULT_OFFSET
+        val pageSize = pageSize ?: DEFAULT_PAGE_SIZE
+
+        //without sorting
+        //narzut tych ifow ale jebac
+        val elapsedTimeResult = executionTimer.measure {
+            if(year != null && !platformName.isNullOrEmpty() && !titleToSearch.isNullOrEmpty()){
+                service.getAllByPlatformAndTitleAndYear(platformName, titleToSearch, year, offset)
+            } else if (year != null && !platformName.isNullOrEmpty()) {
+                service.getAllByPlatformAndYear(platformName, year, offset)
+            } else if (year != null && !titleToSearch.isNullOrEmpty()) {
+                service.getAllByTitleAndYear(titleToSearch, year, offset)
+            } else if (!platformName.isNullOrEmpty() && !titleToSearch.isNullOrEmpty()) {
+                service.getAllByTitleAndPlatform(titleToSearch, platformName, offset)
+            } else if (year != null) {
+                service.getAllByYear(year, offset)
+            } else if (!platformName.isNullOrEmpty()) {
+                service.getAllByPlatform(platformName, offset)
+            } else if(!titleToSearch.isNullOrEmpty()){
+                service.getAllByTitle(titleToSearch, offset)
+            }
+            else {
+                service.getAll(offset).map { it.toMovieSummary() }
+            }
+        }
+
+        val moviesPage: List<MoviePostgresModel> = elapsedTimeResult.blockResult as List<MoviePostgresModel>
+        val movieSummary = moviesPage.map { it.toMovieSummary() }
+        val statistics = getStatistics(elapsedTimeResult)
+        val limitedResult = limitResult(movieSummary, pageSize)
+
+        val response = GetMoviesResponse(
+            movies = limitedResult,
+            nextOffset = offset + limitedResult.size,
+            totalPages = calculateTotalPages(movieSummary, pageSize),
+            totalRecords = moviesPage.size
+        )
+
+        return ResponseWithStatistics(
+            data = response,
+            statistics = statistics
+        )
     }
 
     override fun get(movieId: String): ResponseWithStatistics<Movie> {
@@ -71,4 +114,17 @@ class PostgresMovieService(
             //TODO fix
             databaseMemorySize = 1000.0,
         )
+
+    private fun limitResult(movies: List<MovieSummary>, limit: Int): List<MovieSummary> {
+        return movies.take(limit)
+    }
+
+    private fun calculateTotalPages(movies: List<MovieSummary>, pageSize: Int): Int {
+        return ceil(movies.size.toDouble() / pageSize).toInt()
+    }
+
+    private companion object {
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_PAGE_SIZE = 10
+    }
 }

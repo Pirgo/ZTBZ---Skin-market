@@ -5,7 +5,9 @@ import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.models
 import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.models.DirectorPostgresModel
 import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.models.GenrePostgresModel
 import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.models.PlatformPostgresModel
+import com.pk.zbtz.zbtzbackend.domain.Genre
 import com.pk.zbtz.zbtzbackend.domain.Movie
+import com.pk.zbtz.zbtzbackend.domain.MovieSummary
 import jakarta.persistence.*
 
 @NoArg
@@ -55,6 +57,22 @@ class MoviePostgresModel(
             genres = genres.map { it.toGenre() },
             actors = actors.map { Movie.MovieHuman.Actor(it.human.id.toString(), it.human.firstName + " " + it.human.secondName, it.human.photoUrl, it.character) },
             directors = directors.map { Movie.MovieHuman.Director(it.human.id.toString(), it.human.firstName + " " + it.human.secondName, it.human.photoUrl) }
+        )
+    }
+
+    fun toMovieSummary(): MovieSummary {
+        return MovieSummary(
+            id = id.toString(),
+            title = title,
+            productionYear = productionYear,
+            length = length,
+            coverUrl = coverUrl,
+            genres = genres.map {
+                Genre(
+                    id = it.id.toString(),
+                    name = it.name
+                )
+            }
         )
     }
 }
