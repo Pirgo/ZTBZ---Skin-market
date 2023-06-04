@@ -93,6 +93,18 @@ Pamiec mozemy recznie porownac sprawdzajac ile pamieci zajmuja bazy danych
 ## Generowanie danych MongoDB przy uruchomienia backendu
 Jeżeli chcesz wygenerować dane, zaraz po uruchomieniu aplikacji, to trzeba dodać argument `generateMongoData` przy uruchomieniu programu. Bez tej flagi dane nie będę generowane po uruchomieniu backendu.
 
+Po wygenerowaniu trzeba eksportować dane z użyciem poniższych komend
+```bash
+docker exec -it mongodb mongoexport --db ztbzDatabase --collection movies --out /movies.json --jsonArray --authenticationDatabase ztbzDatabase --username ztbzBackend --password example
+docker exec -it mongodb mongoexport --db ztbzDatabase --collection people --out /people.json --jsonArray --authenticationDatabase ztbzDatabase --username ztbzBackend --password example
+```
+
+Następnie trzeba skopiować pliki do lokalnej maszyny
+```bash
+docker cp mongodb:/movies.json /path/to/your/movies.json
+docker cp mongodb:/people.json /path/to/your/people.json
+```
+
 ## Jak dodać mockowe dane z MongoDB
 Przed przystąpieniem do działania, kontener z bazą danych powinien być uruchomiony, oraz pliki `movies.json` i `people.json` powinny być pobrane.
 
