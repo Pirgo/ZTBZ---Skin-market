@@ -7,13 +7,14 @@ import org.springframework.stereotype.Component
 class MovieServiceFactory(
     private val mongoMovieService: MongoMovieService,
     private val fakeMovieService: FakeMovieService,
+    private val influxMovieService: InfluxMovieService,
 ) {
 
     fun create(movieDatabase: MovieDatabase): MovieService =
         when(movieDatabase) {
             MovieDatabase.POSTGRESQL -> TODO("POSTGRESQL is not implemented yet")
             MovieDatabase.MONGO_DB -> mongoMovieService
-            MovieDatabase.INFLUX -> TODO("INFLUX is not implemented yet")
+            MovieDatabase.INFLUX -> influxMovieService
             MovieDatabase.FAKE_DATABASE -> fakeMovieService
         }
 }
