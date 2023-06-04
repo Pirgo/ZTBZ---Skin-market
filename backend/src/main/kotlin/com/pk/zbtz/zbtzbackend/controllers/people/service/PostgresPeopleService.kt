@@ -1,14 +1,17 @@
 package com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.controllers.people.service
 
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.repositories.HumanPostgresRepository
 import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.services.HumanService
 import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.AddHumanRequest
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.GetPeopleResponse
 import com.pk.zbtz.zbtzbackend.controllers.people.service.PeopleService
 import com.pk.zbtz.zbtzbackend.domain.Human
+import com.pk.zbtz.zbtzbackend.domain.HumanSummary
 import com.pk.zbtz.zbtzbackend.domain.Statistics
 import com.pk.zbtz.zbtzbackend.utils.execution_timer.ExecutionTimer
 import org.springframework.stereotype.Service
+import kotlin.math.ceil
 
 @Service
 class PostgresPeopleService(
@@ -21,7 +24,30 @@ class PostgresPeopleService(
         pageSize: Int?,
         offset: Int?,
     ): ResponseWithStatistics<GetPeopleResponse> {
-        TODO("Not yet implemented")
+        val offset = offset ?: DEFAULT_OFFSET
+        val pageSize = pageSize ?: DEFAULT_PAGE_SIZE
+        val elapsedTimeResult = executionTimer.measure {
+            if(nameToSearch.isNullOrEmpty()){
+                service.getAll(offset).map { it.toHumanSummary() }
+            } else {
+                service.getAllByFirstNameOrSecondName(nameToSearch, offset).map { it.toHumanSummary() }
+            }
+        }
+
+        val peoplePage = elapsedTimeResult.blockResult
+
+        val statistics = getStatistics(elapsedTimeResult)
+        val limitedResult = limitResult(peoplePage, pageSize)
+        val response = GetPeopleResponse(
+            people = limitedResult,
+            nextOffset = offset + limitedResult.size,
+            totalPages = calculateTotalPages(peoplePage, pageSize),
+            totalRecords = peoplePage.size
+        )
+        return ResponseWithStatistics(
+            data = response,
+            statistics = statistics
+        )
     }
 
     override fun get(humanId: String): ResponseWithStatistics<Human> {
@@ -66,4 +92,16 @@ class PostgresPeopleService(
             databaseMemorySize = 1000.0,
         )
 
+    private fun limitResult(people: List<HumanSummary>, limit: Int): List<HumanSummary> {
+        return people.take(limit)
+    }
+
+    private fun calculateTotalPages(people: List<HumanSummary>, pageSize: Int): Int {
+        return ceil(people.size.toDouble() / pageSize).toInt()
+    }
+
+    private companion object {
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_PAGE_SIZE = 10
+    }
 }

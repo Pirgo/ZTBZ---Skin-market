@@ -3,6 +3,7 @@ package com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.postgres.model
 import com.pk.zbtz.zbtzbackend.NoArg
 import com.pk.zbtz.zbtzbackend.databases.postgres.models.MoviePostgresModel
 import com.pk.zbtz.zbtzbackend.domain.Human
+import com.pk.zbtz.zbtzbackend.domain.HumanSummary
 import jakarta.persistence.*
 import java.time.LocalDate
 
@@ -39,6 +40,15 @@ class HumanPostgresModel(
                 actor = playedIn.map { Human.FunctionsValue.Function.Actor(it.movie.id.toString(), it.movie.title) },
                 director = directed.map { Human.FunctionsValue.Function.Director(it.movie.id.toString(), it.movie.title) }
             )
+        )
+    }
+
+    fun toHumanSummary(): HumanSummary {
+        return HumanSummary(
+            id = id.toString(),
+            firstName = firstName,
+            secondName = secondName,
+            photoUrl = photoUrl
         )
     }
 }
