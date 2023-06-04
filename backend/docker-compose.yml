@@ -34,6 +34,7 @@ services:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=adminRoot
       - DOCKER_INFLUXDB_INIT_PASSWORD=exampleexample
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=ztbzToken
       - DOCKER_INFLUXDB_INIT_ORG=ztbzDatabase
       - DOCKER_INFLUXDB_INIT_BUCKET=ztbzTable
 

@@ -6,6 +6,7 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSorting
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.domain.Movie
+import org.springframework.stereotype.Service
 
 @Service
 class InfluxMovieService() : MovieService {
