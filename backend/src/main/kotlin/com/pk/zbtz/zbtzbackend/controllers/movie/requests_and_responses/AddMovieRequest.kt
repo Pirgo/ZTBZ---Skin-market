@@ -1,11 +1,12 @@
 package com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses
 
+
 data class AddMovieRequest(
     val title: String,
     val platformIds: List<String>,
     val genreIds: List<String>,
     val productionYear: Int,
-    val rating: Float?,
+    val rating: Float,
     val plot: String,
     val coverUrl: String,
     val budget: Float,
