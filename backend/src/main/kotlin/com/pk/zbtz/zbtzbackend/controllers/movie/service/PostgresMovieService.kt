@@ -35,35 +35,34 @@ class PostgresMovieService(
         //narzut tych ifow ale jebac
         val elapsedTimeResult = executionTimer.measure {
             if(year != null && !platformName.isNullOrEmpty() && !titleToSearch.isNullOrEmpty()){
-                service.getAllByPlatformAndTitleAndYear(platformName, titleToSearch, year, offset)
+                service.getAllByPlatformAndTitleAndYear(platformName, titleToSearch, year, offset * pageSize, pageSize)
             } else if (year != null && !platformName.isNullOrEmpty()) {
-                service.getAllByPlatformAndYear(platformName, year, offset)
+                service.getAllByPlatformAndYear(platformName, year, offset * pageSize, pageSize)
             } else if (year != null && !titleToSearch.isNullOrEmpty()) {
-                service.getAllByTitleAndYear(titleToSearch, year, offset)
+                service.getAllByTitleAndYear(titleToSearch, year, offset * pageSize, pageSize)
             } else if (!platformName.isNullOrEmpty() && !titleToSearch.isNullOrEmpty()) {
-                service.getAllByTitleAndPlatform(titleToSearch, platformName, offset)
+                service.getAllByTitleAndPlatform(titleToSearch, platformName, offset * pageSize, pageSize)
             } else if (year != null) {
-                service.getAllByYear(year, offset)
+                service.getAllByYear(year, offset * pageSize, pageSize)
             } else if (!platformName.isNullOrEmpty()) {
-                service.getAllByPlatform(platformName, offset)
+                service.getAllByPlatform(platformName, offset * pageSize, pageSize)
             } else if(!titleToSearch.isNullOrEmpty()){
-                service.getAllByTitle(titleToSearch, offset)
+                service.getAllByTitle(titleToSearch, offset * pageSize, pageSize)
             }
             else {
-                service.getAll(offset).map { it.toMovieSummary() }
+                service.getAll(offset * pageSize, pageSize)
             }
         }
 
-        val moviesPage: List<MoviePostgresModel> = elapsedTimeResult.blockResult as List<MoviePostgresModel>
+        val moviesPage: List<MoviePostgresModel> = elapsedTimeResult.blockResult
         val movieSummary = moviesPage.map { it.toMovieSummary() }
         val statistics = getStatistics(elapsedTimeResult)
-        val limitedResult = limitResult(movieSummary, pageSize)
 
         val response = GetMoviesResponse(
-            movies = limitedResult,
-            nextOffset = offset + limitedResult.size,
-            totalPages = calculateTotalPages(movieSummary, pageSize),
-            totalRecords = moviesPage.size
+            movies = movieSummary,
+            nextOffset = offset + 1,
+            totalPages = 100, //TODO change after filling db
+            totalRecords = 100 //TODO change after filling db
         )
 
         return ResponseWithStatistics(
@@ -114,10 +113,6 @@ class PostgresMovieService(
             //TODO fix
             databaseMemorySize = 1000.0,
         )
-
-    private fun limitResult(movies: List<MovieSummary>, limit: Int): List<MovieSummary> {
-        return movies.take(limit)
-    }
 
     private fun calculateTotalPages(movies: List<MovieSummary>, pageSize: Int): Int {
         return ceil(movies.size.toDouble() / pageSize).toInt()

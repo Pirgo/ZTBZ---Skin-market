@@ -11,7 +11,7 @@ import com.pk.zbtz.zbtzbackend.domain.MovieSummary
 import jakarta.persistence.*
 
 @NoArg
-@Table(name = "movies")
+@Table(name = "movies", indexes = [Index(columnList = "rating")])
 @Entity
 class MoviePostgresModel(
     val title: String,

@@ -24,40 +24,39 @@ class MovieService(
         return movieRepository.findById(id).orElseThrow()
     }
 
-    fun getAll(offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllWithOffset(offset)
+    fun getAll(offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllWithOffsetAndLimit(offset, limit)
     }
 
-    fun getAllByYear(year: Int, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByYearWithOffset(year, offset)
+    fun getAllByYear(year: Int, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByYearWithOffsetAndLimit(year, offset, limit)
     }
 
-    fun getAllByPlatform(platform: String, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByPlatformWithOffset(platform, offset)
+    fun getAllByPlatform(platform: String, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByPlatformWithOffsetAndLimit(platform, offset, limit)
     }
 
-    fun getAllByTitle(title: String, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByTitleWithOffset("%$title%", offset)
+    fun getAllByTitle(title: String, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByTitleWithOffsetAndLimit("%$title%", offset, limit)
     }
 
-    fun getAllByTitleAndPlatform(title: String, platform: String, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByTitleAndPlatformWithOffset("%$title%", platform, offset)
+    fun getAllByTitleAndPlatform(title: String, platform: String, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByTitleAndPlatformWithOffsetAndLimit("%$title%", platform, offset, limit)
     }
 
-    fun getAllByTitleAndYear(title: String, year: Int, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByTitleAndYearWithOffset("%$title%", year, offset)
+    fun getAllByTitleAndYear(title: String, year: Int, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByTitleAndYearWithOffsetAndLimit("%$title%", year, offset, limit)
     }
 
-    fun getAllByPlatformAndYear(platform: String, year: Int, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByPlatformAndYearWithOffset(platform, year, offset)
+    fun getAllByPlatformAndYear(platform: String, year: Int, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByPlatformAndYearWithOffsetAndLimit(platform, year, offset, limit)
     }
 
-    fun getAllByPlatformAndTitleAndYear(platform: String, title: String, year: Int, offset: Int): List<MoviePostgresModel> {
-        return movieRepository.findAllByPlatformAndYearAndTitleWithOffset(platform, year, "%$title%", offset)
+    fun getAllByPlatformAndTitleAndYear(platform: String, title: String, year: Int, offset: Int, limit: Int): List<MoviePostgresModel> {
+        return movieRepository.findAllByPlatformAndYearAndTitleWithOffsetAndLimit(platform, year, "%$title%", offset, limit)
     }
 
     fun save(request: AddMovieRequest): MoviePostgresModel {
-        val id = UUID.randomUUID()
         val platforms = platformsPostgresRepository.findAllById(request.platformIds.map { it.toInt() })
         val genres = genresPostgresRepository.findAllById(request.genreIds.map{ it.toInt()})
         val movie = MoviePostgresModel(
