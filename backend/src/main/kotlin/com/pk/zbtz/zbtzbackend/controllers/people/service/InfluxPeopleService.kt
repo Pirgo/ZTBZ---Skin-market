@@ -1,18 +1,23 @@
 package com.pk.zbtz.zbtzbackend.controllers.people.service
 
-import com.influxdb.client.InfluxDBClientFactory
-import com.influxdb.client.WriteApi
-import com.influxdb.client.WriteApiBlocking
-import com.influxdb.client.write.Point
 import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.AddHumanRequest
 import com.pk.zbtz.zbtzbackend.controllers.people.requests_and_responses.GetPeopleResponse
-import com.pk.zbtz.zbtzbackend.databases.influx.InfluxClient
+import com.pk.zbtz.zbtzbackend.databases.influx.models.HumanInfluxModel
+import com.pk.zbtz.zbtzbackend.databases.influx.providers.InfluxMemorySizeProvider
+import com.pk.zbtz.zbtzbackend.databases.influx.queries.InfluxClient
+import com.pk.zbtz.zbtzbackend.databases.influx.queries.InfluxPeopleQueries
 import com.pk.zbtz.zbtzbackend.domain.Human
+import com.pk.zbtz.zbtzbackend.domain.Statistics
+import com.pk.zbtz.zbtzbackend.utils.execution_timer.ExecutionTimer
 import org.springframework.stereotype.Service
 
 @Service
-class InfluxPeopleService() : PeopleService {
+class InfluxPeopleService(
+    private val influxQueries: InfluxPeopleQueries,
+    private val executionTimer: ExecutionTimer,
+    private val influxMemorySizeProvider: InfluxMemorySizeProvider,
+    ) : PeopleService {
     override fun getAll(
         nameToSearch: String?,
         pageSize: Int?,
@@ -24,26 +29,61 @@ class InfluxPeopleService() : PeopleService {
     override fun get(humanId: String): ResponseWithStatistics<Human> {
         TODO("Not yet implemented")
     }
-
-    override fun add(request: AddHumanRequest): ResponseWithStatistics<Human> {
-        val influxClient = InfluxClient()
-        val writeApi: WriteApiBlocking = influxClient.writeApiBlocking
-
-        val point = Point.measurement("humans")
-            .addTag("firstName", request.firstName)
-            .addTag("secondName", request.secondName)
-        request.photoUrl?.let { point.addTag("photoUrl", it) }
-            ?.addField("birthday", request.birthday.toEpochDay() * 1000000)
-            ?.addTag("placeOfBirth", request.placeOfBirth)
-        request.deathDay?.let { point.addField("deathDay", it.toEpochDay() * 1000000) }
-            ?.addTag("description", request.description)
-
-        writeApi.writePoint(point)
-        influxClient.close()
-        TODO("Not yet implemented")
+    private fun HumanInfluxModel.toHuman(): Human {
+        return Human(
+            id = this.id ?: "",
+            firstName = this.firstName,
+            secondName = this.secondName,
+            photoUrl = this.photoUrl,
+            birthday = this.birthday,
+            placeOfBirth = this.placeOfBirth,
+            deathDay = this.deathDay,
+            description = this.description,
+            functions = this.functions.toFunctionsValue()
+        )
     }
+    private fun HumanInfluxModel.FunctionsValueInflux.toFunctionsValue(): Human.FunctionsValue =
+        Human.FunctionsValue(
+            director = this.director.map { it.toDirector() },
+            actor = this.actor.map { it.toActor() }
+        )
+
+    private fun HumanInfluxModel.FunctionsValueInflux.FunctionInflux.DirectorInflux.toDirector(): Human.FunctionsValue.Function.Director =
+        Human.FunctionsValue.Function.Director(
+            filmId = this.filmId,
+            title = this.title
+        )
+
+    private fun HumanInfluxModel.FunctionsValueInflux.FunctionInflux.ActorInflux.toActor(): Human.FunctionsValue.Function.Actor =
+        Human.FunctionsValue.Function.Actor(
+            filmId = this.filmId,
+            title = this.title
+        )
+    override fun add(request: AddHumanRequest): ResponseWithStatistics<Human> {
+        val influxClient = InfluxClient().create()
+        val elapsedTimeResult = executionTimer.measure {
+            influxQueries.InfluxAddHuman(influxClient, request)
+        }
+        val human = elapsedTimeResult.blockResult.toHuman()
+        influxClient.close()
+
+        return ResponseWithStatistics(
+            data = human,
+            statistics = getStatistics(elapsedTimeResult),
+        )
+    }
+
 
     override fun delete(humanId: String): ResponseWithStatistics<Unit> {
         TODO("Not yet implemented")
     }
+
+    private fun <T> getStatistics(
+        elapsedTimeResult: ExecutionTimer.ElapsedTimeResult<T>
+    ): Statistics =
+        Statistics(
+            accessTime = elapsedTimeResult.time,
+            databaseMemorySize = influxMemorySizeProvider.getDatabaseSizeInGigabytes(),
+        )
+
 }

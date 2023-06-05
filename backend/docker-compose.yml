@@ -7,6 +7,7 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+      - influx
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://ztbzBackend:example@mongo:27017/ztbzDatabase
 
@@ -34,7 +35,7 @@ services:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=adminRoot
       - DOCKER_INFLUXDB_INIT_PASSWORD=exampleexample
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=ztbzToken
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=ztbz-super-secret-auth-token
       - DOCKER_INFLUXDB_INIT_ORG=ztbzDatabase
       - DOCKER_INFLUXDB_INIT_BUCKET=ztbzTable
 
