@@ -111,18 +111,11 @@ class DummyMongoDataService(
         println("FINISHED GENERATING !!!")
     }
 
-    private fun generateFakeMovie(faker: Faker): MovieMongoModel {
-        val genres = (1..3).map {
-            MovieMongoModel.GenreMovieMongo(
-                id = faker.randomId(),
-                name = faker.book.genre()
-            )
-        }
-
-        return MovieMongoModel(
+    private fun generateFakeMovie(faker: Faker): MovieMongoModel =
+        MovieMongoModel(
             title = faker.movie.title(),
             platforms = platforms.getRandomElements(faker.random.nextInt(platforms.size)),
-            genres = genres,
+            genres = genres.getRandomElements(faker.random.nextInt(genres.size)),
             productionYear = faker.random.nextInt(1970, 2023),
             rating = faker.random.nextFloat() * 2,
             plot = faker.lorem.words(),
@@ -132,7 +125,6 @@ class DummyMongoDataService(
             actors = emptyList(),
             directors = emptyList(),
         )
-    }
 
 
     private fun generateFakeHuman(faker: Faker): HumanMongoModel =
@@ -228,7 +220,7 @@ class DummyMongoDataService(
         this.random.nextLong(Long.MAX_VALUE).let(::abs).toString()
 
     private fun Faker.birthDate(): LocalDate =
-        this.person.birthDate(age = this.random.nextLong(100))
+        this.person.birthDate(age = this.random.nextLong(52))
 
     private fun <T> List<T>.getRandomElements(n: Int): List<T> =
         when {
@@ -253,6 +245,29 @@ class DummyMongoDataService(
                 name = "Amazon Prime",
                 logoUrl = "https://m.media-amazon.com/images/G/01/primevideo/seo/primevideo-seo-logo.png"
             ),
+        )
+
+        val genres = listOf(
+            MovieMongoModel.GenreMovieMongo("1", "Action"),
+            MovieMongoModel.GenreMovieMongo("2", "Adventure"),
+            MovieMongoModel.GenreMovieMongo("3", "Comedy"),
+            MovieMongoModel.GenreMovieMongo("4", "Drama"),
+            MovieMongoModel.GenreMovieMongo("5", "Fantasy"),
+            MovieMongoModel.GenreMovieMongo("6", "Horror"),
+            MovieMongoModel.GenreMovieMongo("7", "Mystery"),
+            MovieMongoModel.GenreMovieMongo("8", "Romance"),
+            MovieMongoModel.GenreMovieMongo("9", "Sci-Fi"),
+            MovieMongoModel.GenreMovieMongo("10", "Thriller"),
+            MovieMongoModel.GenreMovieMongo("11", "Animation"),
+            MovieMongoModel.GenreMovieMongo("12", "Family"),
+            MovieMongoModel.GenreMovieMongo("13", "Crime"),
+            MovieMongoModel.GenreMovieMongo("14", "Documentary"),
+            MovieMongoModel.GenreMovieMongo("15", "History"),
+            MovieMongoModel.GenreMovieMongo("16", "Music"),
+            MovieMongoModel.GenreMovieMongo("17", "Sport"),
+            MovieMongoModel.GenreMovieMongo("18", "War"),
+            MovieMongoModel.GenreMovieMongo("19", "Western"),
+            MovieMongoModel.GenreMovieMongo("20", "Biography")
         )
     }
 }
