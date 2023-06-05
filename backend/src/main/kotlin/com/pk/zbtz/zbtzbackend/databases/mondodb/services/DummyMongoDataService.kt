@@ -33,10 +33,12 @@ class DummyMongoDataService(
 
     private fun generateDummyData() {
         val faker = Faker()
-        val numberOfMovies = 70000
-        val numberOfHumans = 150000
-        val maxNumberOfActorsForSingleFilm = 50
-        val maxNumberOfDirectorsForSingleFilm = 50
+        val numberOfMovies = 80000
+        val numberOfHumans = 175000
+        val minNumberOfActorsForSingleFilm = 30
+        val maxNumberOfActorsForSingleFilm = 70
+        val minNumberOfDirectorsForSingleFilm = 10
+        val maxNumberOfDirectorsForSingleFilm = 30
 
         println("GENERATING PEOPLE")
         val people: MutableList<HumanMongoModel> = (1..numberOfHumans)
@@ -54,7 +56,9 @@ class DummyMongoDataService(
             faker = faker,
             numberOfHumans = numberOfHumans,
             people = people,
-            maxNumberOfDirectorsForSingleFilm = maxNumberOfDirectorsForSingleFilm
+            maxNumberOfDirectorsForSingleFilm = maxNumberOfDirectorsForSingleFilm,
+            minNumberOfActorsForSingleFilm = minNumberOfActorsForSingleFilm,
+            minNumberOfDirectorsForSingleFilm = minNumberOfDirectorsForSingleFilm,
         )
     }
 
@@ -64,13 +68,17 @@ class DummyMongoDataService(
         faker: Faker,
         numberOfHumans: Int,
         people: MutableList<HumanMongoModel>,
-        maxNumberOfDirectorsForSingleFilm: Int
-    ) {
+        maxNumberOfDirectorsForSingleFilm: Int,
+        minNumberOfActorsForSingleFilm: Int,
+        minNumberOfDirectorsForSingleFilm: Int,
+
+        ) {
         println("GENERATING ACTORS AND DIRECTORS")
         movies.mapIndexed { movieIndex, movie ->
             println("Generating actors and directors for movie with index: $movieIndex")
 
             val randomActorsIndexes = generateRandomHumanIndexes(
+                minNumberOfIndexes = minNumberOfActorsForSingleFilm,
                 maxNumberOfIndexes = maxNumberOfActorsForSingleFilm,
                 faker = faker,
                 numberOfHumans = numberOfHumans,
@@ -87,6 +95,7 @@ class DummyMongoDataService(
             )
 
             val randomDirectorsIndexes = generateRandomHumanIndexes(
+                minNumberOfIndexes = minNumberOfDirectorsForSingleFilm,
                 maxNumberOfIndexes = maxNumberOfDirectorsForSingleFilm,
                 faker = faker,
                 numberOfHumans = numberOfHumans,
@@ -143,10 +152,14 @@ class DummyMongoDataService(
         )
 
     private fun generateRandomHumanIndexes(
+        minNumberOfIndexes: Int,
         maxNumberOfIndexes: Int,
         faker: Faker,
         numberOfHumans: Int
-    ): List<Int> = (1..maxNumberOfIndexes).map { faker.random.nextInt(0, numberOfHumans - 1) }.distinct()
+    ): List<Int> =
+        (1..faker.random.nextInt(minNumberOfIndexes, maxNumberOfIndexes))
+            .map { faker.random.nextInt(0, numberOfHumans - 1) }
+            .distinct()
 
     private fun updatePeopleWithActorRole(
         randomActorsIndexes: List<Int>,
