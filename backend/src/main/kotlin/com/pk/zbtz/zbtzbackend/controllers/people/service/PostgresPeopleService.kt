@@ -28,21 +28,21 @@ class PostgresPeopleService(
         val pageSize = pageSize ?: DEFAULT_PAGE_SIZE
         val elapsedTimeResult = executionTimer.measure {
             if(nameToSearch.isNullOrEmpty()){
-                service.getAll(offset).map { it.toHumanSummary() }
+                service.getAll(offset * pageSize, pageSize)
             } else {
-                service.getAllByFirstNameOrSecondName(nameToSearch, offset).map { it.toHumanSummary() }
+                service.getAllByFirstNameOrSecondName(nameToSearch, offset * pageSize, pageSize)
             }
         }
 
         val peoplePage = elapsedTimeResult.blockResult
-
+        val peopleSummary = peoplePage.map { it.toHumanSummary() }
         val statistics = getStatistics(elapsedTimeResult)
-        val limitedResult = limitResult(peoplePage, pageSize)
+
         val response = GetPeopleResponse(
-            people = limitedResult,
-            nextOffset = offset + limitedResult.size,
-            totalPages = calculateTotalPages(peoplePage, pageSize),
-            totalRecords = peoplePage.size
+            people = peopleSummary,
+            nextOffset = offset + 1,
+            totalPages = 100, //TODO change after filling db
+            totalRecords = 100 //TODO change after filling db
         )
         return ResponseWithStatistics(
             data = response,

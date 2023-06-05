@@ -12,7 +12,7 @@ import java.time.LocalDate
 @Entity
 class HumanPostgresModel(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int?,
     val firstName: String,
     val secondName: String,

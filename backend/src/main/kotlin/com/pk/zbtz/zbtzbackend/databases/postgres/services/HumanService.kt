@@ -13,12 +13,12 @@ class HumanService(
         return repository.findById(id).orElseThrow()
     }
 
-    fun getAll(offset: Int): List<HumanPostgresModel> {
-        return repository.findAllWithOffset(offset)
+    fun getAll(offset: Int, limit: Int): List<HumanPostgresModel> {
+        return repository.findAllWithOffset(offset, limit)
     }
 
-    fun getAllByFirstNameOrSecondName(name: String, offset: Int): List<HumanPostgresModel> {
-        return repository.findAllByFirstNameOrSecondName(name, offset)
+    fun getAllByFirstNameOrSecondName(name: String, offset: Int, limit: Int): List<HumanPostgresModel> {
+        return repository.findAllByFirstNameOrSecondName(name, offset, limit)
     }
 
     fun save(human: HumanPostgresModel): HumanPostgresModel {
