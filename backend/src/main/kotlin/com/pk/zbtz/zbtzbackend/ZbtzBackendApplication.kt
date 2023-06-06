@@ -27,6 +27,7 @@ class ZbtzBackendApplication {
         if (args.sourceArgs.contains("generateMongoData")) {
             dummyMongoDataService.clearAndGenerateDummyData()
         }
+        dummyMongoDataService.addDummyPlatformsAndGenres()
     }
 }
 

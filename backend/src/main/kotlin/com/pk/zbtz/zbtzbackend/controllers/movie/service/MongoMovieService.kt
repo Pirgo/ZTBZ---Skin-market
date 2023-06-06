@@ -1,5 +1,7 @@
 package com.pk.zbtz.zbtzbackend.controllers.movie.service
 
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.GenreMongoRepository
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.PlatformMongoRepository
 import com.pk.zbtz.zbtzbackend.controllers.ResponseWithStatistics
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.AddMovieRequest
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesResponse
@@ -24,6 +26,8 @@ class MongoMovieService(
     private val humanMongoRepository: HumanMongoRepository,
     private val executionTimer: ExecutionTimer,
     private val mongoMemorySizeProvider: MongoMemorySizeProvider,
+    private val genreMongoRepository: GenreMongoRepository,
+    private val platformMongoRepository: PlatformMongoRepository,
 ) : MovieService {
     override fun getAll(
         sort: GetMoviesSorting?,
@@ -168,18 +172,25 @@ class MongoMovieService(
     }
 
     private fun getAllPlatforms(request: AddMovieRequest): List<MovieMongoModel.PlatformMovieMongo> =
-        repository
-            .findAllByPlatformIds(platformIds = request.platformIds)
-            .flatMap(MovieMongoModel::platforms)
-            .distinct()
-            .filter { request.platformIds.contains(it.id) }
+        platformMongoRepository
+            .findAllByIdIn(ids = request.platformIds)
+            .map {
+                MovieMongoModel.PlatformMovieMongo(
+                    id = it.id,
+                    name = it.name,
+                    logoUrl = it.logoUrl,
+                )
+            }
 
     private fun getAllGenres(request: AddMovieRequest): List<MovieMongoModel.GenreMovieMongo> =
-        repository
-            .findAllByGenreIds(genreId = request.genreIds)
-            .flatMap(MovieMongoModel::genres)
-            .distinct()
-            .filter { request.genreIds.contains(it.id) }
+        genreMongoRepository
+            .findAllByIdIn(ids = request.platformIds)
+            .map {
+                MovieMongoModel.GenreMovieMongo(
+                    id = it.id,
+                    name = it.name,
+                )
+            }
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun getActorsFromRequest(request: AddMovieRequest): List<MovieMongoModel.HumanMovieMongo.Actor> =

@@ -1,5 +1,9 @@
 package com.pk.zbtz.zbtzbackend.databases.mondodb.services
 
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.mondodb.models.GenreMongoModel
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.mondodb.models.PlatformMongoModel
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.GenreMongoRepository
+import com.pk.zbtz.zbtzbackend.com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.PlatformMongoRepository
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.HumanMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.models.MovieMongoModel
 import com.pk.zbtz.zbtzbackend.databases.mondodb.repositories.HumanMongoRepository
@@ -22,6 +26,8 @@ validating application functionality.
 class DummyMongoDataService(
     private val movieRepository: MovieMongoRepository,
     private val humanRepository: HumanMongoRepository,
+    private val genreMongoRepository: GenreMongoRepository,
+    private val platformMongoRepository: PlatformMongoRepository,
     private val movieCoversUrlGenerator: MovieCoversUrlGenerator,
     private val humanPhotoUrlGenerator: HumanPhotoUrlGenerator,
 ) {
@@ -216,9 +222,6 @@ class DummyMongoDataService(
             )
         }
 
-    private fun Faker.randomId(): String =
-        this.random.nextLong(Long.MAX_VALUE).let(::abs).toString()
-
     private fun Faker.birthDate(): LocalDate =
         this.person.birthDate(age = this.random.nextLong(52))
 
@@ -227,6 +230,16 @@ class DummyMongoDataService(
             this.isEmpty() || n >= size -> this
             else -> (indices).shuffled().take(n).map { this[it] }
         }
+
+    fun addDummyPlatformsAndGenres() {
+        if(genreMongoRepository.count() == 0L) {
+            genreMongoRepository.saveAll(genresMongo)
+        }
+
+        if(platformMongoRepository.count() == 0L) {
+            platformMongoRepository.saveAll(platformsMongo)
+        }
+    }
 
     private companion object {
         val platforms = listOf(
@@ -268,6 +281,47 @@ class DummyMongoDataService(
             MovieMongoModel.GenreMovieMongo("18", "War"),
             MovieMongoModel.GenreMovieMongo("19", "Western"),
             MovieMongoModel.GenreMovieMongo("20", "Biography")
+        )
+
+        val platformsMongo = listOf(
+            PlatformMongoModel(
+                id = "1",
+                name = "Netflix",
+                logoUrl = "https://historia.org.pl/wp-content/uploads/2018/04/netflix-logo.jpg"
+            ),
+            PlatformMongoModel(
+                id = "2",
+                name = "Hulu",
+                logoUrl = "https://i0.wp.com/cordcuttersnews.com/wp-content/uploads/2019/09/Hulu-New-Logo-Rec.png?w=1011&ssl=1"
+            ),
+            PlatformMongoModel(
+                id = "3",
+                name = "Amazon Prime",
+                logoUrl = "https://m.media-amazon.com/images/G/01/primevideo/seo/primevideo-seo-logo.png"
+            ),
+        )
+
+        val genresMongo = listOf(
+            GenreMongoModel("1", "Action"),
+            GenreMongoModel("2", "Adventure"),
+            GenreMongoModel("3", "Comedy"),
+            GenreMongoModel("4", "Drama"),
+            GenreMongoModel("5", "Fantasy"),
+            GenreMongoModel("6", "Horror"),
+            GenreMongoModel("7", "Mystery"),
+            GenreMongoModel("8", "Romance"),
+            GenreMongoModel("9", "Sci-Fi"),
+            GenreMongoModel("10", "Thriller"),
+            GenreMongoModel("11", "Animation"),
+            GenreMongoModel("12", "Family"),
+            GenreMongoModel("13", "Crime"),
+            GenreMongoModel("14", "Documentary"),
+            GenreMongoModel("15", "History"),
+            GenreMongoModel("16", "Music"),
+            GenreMongoModel("17", "Sport"),
+            GenreMongoModel("18", "War"),
+            GenreMongoModel("19", "Western"),
+            GenreMongoModel("20", "Biography")
         )
     }
 }
