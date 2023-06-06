@@ -78,7 +78,14 @@ export interface MovieDetails {
     coverUrl: string,
     budget: number,
     length: number,
-    //TODO actors and directors
+    actors: [{
+        id: string,
+        name: string
+    }],
+    directors: [{
+        id: string,
+        name: string
+    }]
 }
 
 export interface MovieDetailsResponse {

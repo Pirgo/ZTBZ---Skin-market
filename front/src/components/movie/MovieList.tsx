@@ -16,6 +16,23 @@ const Container = styled("div", {
     paddingRight: "8px"
 })
 
+const InnerContainer = styled("div", {
+    marginTop: "16px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "16px"
+})
+
+const SearchContainer = styled("div", {
+    display: "flex",
+    flexDirection: "row",
+    gap: "8px",
+    marginTop: "8px",
+    justifyContent: "center",
+    alignItems: "center"
+})
+
 export const MyPaginate = styled(ReactPaginate, {
     // You can redefine classes here, if you want.
     activeClassName: 'active',
@@ -108,11 +125,15 @@ const MovieList = () => {
     }
     return (
         <Container>
-            <MovieSearchBox/>
-            <YearFilter/>
-            <PlatformFilter/>
-            <button onClick={search}>Search</button>
-            {renderMovies()}
+            <SearchContainer>
+                <MovieSearchBox/>
+                <YearFilter/>
+                <PlatformFilter/>
+                <button onClick={search}>Search</button>
+            </SearchContainer>
+            <InnerContainer>
+                {renderMovies()}
+            </InnerContainer>
             <MyPaginate
                 breakLabel="..."
                 nextLabel="next >"

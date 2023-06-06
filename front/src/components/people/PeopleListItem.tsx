@@ -5,7 +5,11 @@ import {Human} from "../../store/api/people";
 
 const Container = styled("div", {
     display: "flex",
-    cursor: "pointer"
+    cursor: "pointer",
+    width: "50%",
+    border: "1px solid black",
+    borderRadius: "8px",
+    overflow: "hidden"
 })
 
 const CoverImage = styled("img", {
@@ -13,7 +17,9 @@ const CoverImage = styled("img", {
 })
 
 const InnerContainer = styled("div", {
-
+    marginLeft: "8px",
+    display: "flex",
+    alignItems: "center"
 })
 
 type PeopleListItemProps = {
@@ -26,7 +32,7 @@ const PeopleListItem = ({person}: PeopleListItemProps) => {
         <Container onClick={() => navigate(`/people/${person.id}`)}>
             <CoverImage src={person.photoUrl}/>
             <InnerContainer>
-                <p>{person.firstName} {person.secondName}</p>
+                <h1>{person.firstName} {person.secondName}</h1>
             </InnerContainer>
         </Container>
     )

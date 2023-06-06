@@ -31,7 +31,7 @@ const PlatformFilter = () => {
 
     return (
         <Container>
-            <label>Platform</label>
+            <label>Platform </label>
             <select value={platform} onChange={handleChange}>
                 {options}
             </select>

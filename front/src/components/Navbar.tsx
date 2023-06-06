@@ -5,32 +5,24 @@ const Container = styled("div", {
     width: "100%",
     height: "50px",
     display: "flex",
-    gap: "8px",
-    backgroundColor: "#0B2447",
-    alignItems: "center"
+    backgroundColor: "black",
+    alignItems: "center",
+    paddingLeft: "8px",
+    paddingRight: "8px",
+    gap: "8px"
 })
 
-const ContainerItem = styled("div", {
-    color: "#FFEBEB",
+const CutomATag = styled("a", {
     fontSize: "24px",
-})
-
-const SettingsItem = styled(ContainerItem, {
-    marginLeft: "auto"
+    color: "white",
 })
 
 const Navbar = () => {
     return (
         <Container>
-            <ContainerItem>
-                <a href={MOVIE_LIST_PATH}>Movies</a>
-            </ContainerItem>
-            <ContainerItem>
-                <a href={PEOPLE_LIST_PATH}>People</a>
-            </ContainerItem>
-            <SettingsItem>
-                <a href={SETTINGS_PATH}>Settings</a>
-            </SettingsItem>
+                <CutomATag href={MOVIE_LIST_PATH}>Movies</CutomATag>
+                <CutomATag href={PEOPLE_LIST_PATH}>People</CutomATag>
+                <CutomATag href={SETTINGS_PATH}>Settings</CutomATag>
         </Container>
     )
 }
