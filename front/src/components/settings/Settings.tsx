@@ -417,7 +417,7 @@ const Settings = () => {
                 categories: ["Mongo", "Postgres"]
             },
             title: {
-                text: "POST people",
+                text: "POST person",
             },
             colors: ['#00ff00', '#0000FF'],
             plotOptions: {
@@ -443,7 +443,7 @@ const Settings = () => {
                 categories: ["Mongo", "Postgres"]
             },
             title: {
-                text: "POST movies",
+                text: "POST movie",
             },
             colors: ['#00ff00', '#0000FF'],
             plotOptions: {
@@ -495,7 +495,7 @@ const Settings = () => {
                 categories: ["Mongo", "Postgres"]
             },
             title: {
-                text: "GET people",
+                text: "GET person",
             },
             colors: ['#00ff00', '#0000FF'],
             plotOptions: {
@@ -521,7 +521,7 @@ const Settings = () => {
                 categories: ["Mongo", "Postgres"]
             },
             title: {
-                text: "Delete people",
+                text: "Delete person",
             },
             colors: ['#00ff00', '#0000FF'],
             plotOptions: {
