@@ -48,7 +48,7 @@ const PeopleList = () => {
     })
 
     const handlePageClick = (e: any) => {
-        const newOffset = e.selected + 1
+        const newOffset = e.selected
         setOffset(newOffset)
     }
 
