@@ -14,6 +14,23 @@ const Container = styled("div", {
     paddingRight: "8px"
 })
 
+const InnerContainer = styled("div", {
+    marginTop: "16px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "16px"
+})
+
+const SearchContainer = styled("div", {
+    display: "flex",
+    flexDirection: "row",
+    gap: "8px",
+    marginTop: "8px",
+    justifyContent: "center",
+    alignItems: "center"
+})
+
 const PEOPLE_PER_PAGE = 10;
 
 const PeopleList = () => {
@@ -31,7 +48,7 @@ const PeopleList = () => {
     })
 
     const handlePageClick = (e: any) => {
-        const newOffset = e.selected + 1
+        const newOffset = e.selected
         setOffset(newOffset)
     }
 
@@ -49,9 +66,13 @@ const PeopleList = () => {
     }
     return (
         <Container>
-            <PeopleSearchBox/>
-            <button onClick={search}>Search</button>
-            {renderPeople()}
+            <SearchContainer>
+                <PeopleSearchBox/>
+                <button onClick={search}>Search</button>
+            </SearchContainer>
+            <InnerContainer>
+                {renderPeople()}
+            </InnerContainer>
             <MyPaginate
                 breakLabel="..."
                 nextLabel="next >"
