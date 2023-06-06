@@ -15,4 +15,7 @@ interface HumanMongoRepository : MongoRepository<HumanMongoModel, String> {
         name: String,
         pageable: Pageable,
     ): Page<HumanMongoModel>
+
+    @Query("{'\$or': [{'functions.director.filmId': ?0}, {'functions.actor.filmId': ?0}]}")
+    fun findByFilmId(filmId: String): List<HumanMongoModel>
 }

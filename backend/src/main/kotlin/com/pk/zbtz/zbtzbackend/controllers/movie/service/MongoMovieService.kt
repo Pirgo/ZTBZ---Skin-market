@@ -297,6 +297,19 @@ class MongoMovieService(
     override fun delete(movieId: String): ResponseWithStatistics<Unit> {
         val elapsedTimeResult = executionTimer.measure {
             repository.deleteById(movieId)
+
+            humanMongoRepository
+                .findByFilmId(filmId = movieId)
+                .map { human ->
+                    with(human) {
+                        copy(
+                            functions = functions.copy(
+                                director = functions.director.filter { it.filmId != movieId },
+                                actor = functions.actor.filter { it.filmId != movieId }
+                            )
+                        )
+                    }
+                }.let(humanMongoRepository::saveAll)
         }
 
         return ResponseWithStatistics(
