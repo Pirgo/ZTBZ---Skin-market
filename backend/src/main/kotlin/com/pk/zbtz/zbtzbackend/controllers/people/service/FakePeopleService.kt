@@ -9,13 +9,14 @@ import com.pk.zbtz.zbtzbackend.domain.Statistics
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import kotlin.math.ceil
+import kotlin.random.Random
 
 /*
 * Only for testing purpose. Functions return dummy data to imitate API usage.
 */
 @Service
 class FakePeopleService : PeopleService {
-    private val dummyHumans = dummyPeople.toMutableList()
+    private val dummyHumans = generateDb()
 
     override fun getAll(
         nameToSearch: String?,
@@ -54,7 +55,10 @@ class FakePeopleService : PeopleService {
 
         return ResponseWithStatistics(
             data = response,
-            statistics = dummyStatistics
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            )
         )
     }
 
@@ -63,7 +67,10 @@ class FakePeopleService : PeopleService {
 
         return ResponseWithStatistics(
             data = human,
-            statistics = dummyStatistics
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            )
         )
     }
 
@@ -88,7 +95,10 @@ class FakePeopleService : PeopleService {
 
         return ResponseWithStatistics(
             data = newHuman,
-            statistics = dummyStatistics,
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            ),
         )
     }
 
@@ -98,7 +108,10 @@ class FakePeopleService : PeopleService {
         dummyHumans.remove(human)
 
         return ResponseWithStatistics(
-            statistics = dummyStatistics
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            )
         )
     }
 
@@ -197,8 +210,34 @@ class FakePeopleService : PeopleService {
         )
 
         val dummyStatistics = Statistics(
-            accessTime = 1000,
-            databaseMemorySize = 2137.0,
+            accessTime = Random.nextLong(65, 1025),
+            databaseMemorySize = 1273.0,
         )
+    }
+
+    private fun generateDb(): MutableList<Human> {
+        val humans = mutableListOf<Human>()
+        for (i in 6..1000000) {
+            humans.add(Human(
+                id = i.toString(),
+                firstName = "John$i",
+                secondName = "Doe$i",
+                photoUrl = "https://image.tmdb.org/t/p/w500/pVHspL9QWsXCm3t3VXEaCJ9y8Zz.jpg",
+                birthday = LocalDate.of(1980, 1, 1),
+                placeOfBirth = "New York, USA",
+                deathDay = null,
+                description = "John$i Doe$i is an American actor and director.",
+                functions = Human.FunctionsValue(
+                    director = listOf(
+                        Human.FunctionsValue.Function.Director(filmId = "$i", title = "Movie $i")
+                    ),
+                    actor = listOf(
+                        Human.FunctionsValue.Function.Actor(filmId = "$i", title = "Movie $i"),
+                        Human.FunctionsValue.Function.Actor(filmId = "$i", title = "Movie $i")
+                    )
+                )
+            ))
+        }
+        return humans
     }
 }
