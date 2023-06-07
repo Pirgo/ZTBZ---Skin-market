@@ -27,7 +27,17 @@ class InfluxPeopleService(
     }
 
     override fun get(humanId: String): ResponseWithStatistics<Human> {
-        TODO("Not yet implemented")
+        val influxClient = InfluxClient().create()
+        val elapsedTimeResult = executionTimer.measure {
+            influxQueries.influxGetHuman(influxClient, humanId)?.toHuman()
+        }
+        val human = elapsedTimeResult.blockResult
+        influxClient.close()
+
+        return ResponseWithStatistics(
+            data = human,
+            statistics = getStatistics(elapsedTimeResult),
+        )
     }
     private fun HumanInfluxModel.toHuman(): Human {
         return Human(
@@ -62,7 +72,7 @@ class InfluxPeopleService(
     override fun add(request: AddHumanRequest): ResponseWithStatistics<Human> {
         val influxClient = InfluxClient().create()
         val elapsedTimeResult = executionTimer.measure {
-            influxQueries.InfluxAddHuman(influxClient, request)
+            influxQueries.influxAddHuman(influxClient, request)
         }
         val human = elapsedTimeResult.blockResult.toHuman()
         influxClient.close()
