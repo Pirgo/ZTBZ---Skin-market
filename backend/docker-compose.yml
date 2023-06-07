@@ -8,6 +8,7 @@ services:
     depends_on:
       - mongo
       - postgres
+      - influx
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://ztbzBackend:example@mongo:27017/ztbzDatabase
 
@@ -36,7 +37,23 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
+  influx:
+    image: influxdb:latest
+    container_name: "influxdb"
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-storage:/varlib/influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=adminRoot
+      - DOCKER_INFLUXDB_INIT_PASSWORD=exampleexample
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=ztbz-super-secret-auth-token
+      - DOCKER_INFLUXDB_INIT_ORG=ztbzDatabase
+      - DOCKER_INFLUXDB_INIT_BUCKET=ztbzTable
+
 volumes:
   mongo_data:
   postgres:
     driver: local
+  influxdb-storage:

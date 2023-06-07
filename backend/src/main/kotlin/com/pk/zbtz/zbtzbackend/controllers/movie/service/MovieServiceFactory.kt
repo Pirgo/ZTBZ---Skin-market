@@ -15,7 +15,7 @@ class MovieServiceFactory(
         when(movieDatabase) {
             MovieDatabase.POSTGRESQL -> postgresMovieService
             MovieDatabase.MONGO_DB -> mongoMovieService
-            MovieDatabase.INFLUX -> TODO("INFLUX is not implemented yet")
+            MovieDatabase.INFLUX -> fakeMovieService
             MovieDatabase.FAKE_DATABASE -> fakeMovieService
         }
 }

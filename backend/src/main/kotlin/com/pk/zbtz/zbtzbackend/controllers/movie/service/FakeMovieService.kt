@@ -7,14 +7,16 @@ import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMovie
 import com.pk.zbtz.zbtzbackend.controllers.movie.requests_and_responses.GetMoviesSortingOrder
 import com.pk.zbtz.zbtzbackend.domain.*
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import kotlin.math.ceil
+import kotlin.random.Random
 
 /*
 * Only for testing purpose. Functions return dummy data to imitate API usage.
 */
 @Service
 class FakeMovieService : MovieService {
-    private val movies: MutableList<Movie> = dummyMovies.toMutableList()
+    private val movies: MutableList<Movie> = generateDb()
 
     override fun getAll(
         sort: GetMoviesSorting?,
@@ -81,7 +83,10 @@ class FakeMovieService : MovieService {
 
         return ResponseWithStatistics(
             data = response,
-            statistics = dummyStatistics
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            )
         )
     }
 
@@ -98,7 +103,10 @@ class FakeMovieService : MovieService {
     override fun get(movieId: String): ResponseWithStatistics<Movie> =
         ResponseWithStatistics(
             data = movies.find { it.id == movieId },
-            statistics = dummyStatistics,
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            ),
         )
 
     override fun add(request: AddMovieRequest): ResponseWithStatistics<Movie> {
@@ -151,7 +159,10 @@ class FakeMovieService : MovieService {
         movies.add(newMovie)
         return ResponseWithStatistics(
             data = newMovie,
-            statistics = dummyStatistics // Implement statistics if needed
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            ) // Implement statistics if needed
         )
     }
 
@@ -160,7 +171,10 @@ class FakeMovieService : MovieService {
         movies.remove(movieToRemove)
 
         return ResponseWithStatistics(
-            statistics = dummyStatistics,
+            statistics = Statistics(
+                accessTime = Random.nextLong(65, 1025),
+                databaseMemorySize = 1273.3,
+            ),
         )
     }
 
@@ -307,5 +321,40 @@ class FakeMovieService : MovieService {
             accessTime = 1000,
             databaseMemorySize = 2137.0,
         )
+    }
+
+    private fun generateDb(): MutableList<Movie> {
+        val movies = mutableListOf<Movie>()
+        for (i in 6..1000000) {
+            movies.add(Movie(
+                id = "$i",
+                title = "Example Movie $i",
+                platforms = listOf(Platform("$i", "Platform $i", "https://example.com/platform$i/logo.jpg")),
+                genres = listOf(Genre("$i", "Action"), Genre("${i + 1}", "Comedy")),
+                productionYear = 2020,
+                rating = 7.5f,
+                plot = "A thrilling action-comedy about unlikely heroes saving the world.",
+                coverUrl = "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+                budget = 1000000.0f,
+                length = 120.0f,
+                actors = listOf(
+                    Movie.MovieHuman.Actor(
+                        id = "$i",
+                        name = "Actor $i",
+                        photoUrl = "https://example.com/actor$i/photo.jpg",
+                        character = "Hero $i"
+                    )
+                ),
+                directors = listOf(
+                    Movie.MovieHuman.Director(
+                        id = "$i",
+                        name = "Director $i",
+                        photoUrl = "https://example.com/director$i/photo.jpg"
+                    )
+                )
+            )
+            )
+        }
+        return movies
     }
 }
