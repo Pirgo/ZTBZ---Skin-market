@@ -9,6 +9,7 @@ services:
       - mongo
       - postgres
       - influx
+
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://ztbzBackend:example@mongo:27017/ztbzDatabase
 

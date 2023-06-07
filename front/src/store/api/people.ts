@@ -39,7 +39,7 @@ export interface HumanDetails {
     //TODO change any to proper type
     birthday: any,
     placeOfBirth: string,
-    deathDay?: string,
+    deathDay: any,
     description: string,
     functions: {
         director: MovieRoleData[],
@@ -48,7 +48,7 @@ export interface HumanDetails {
 }
 
 export interface MovieRoleData {
-    filmid: string,
+    filmId: string,
     title: string,
 }
 
